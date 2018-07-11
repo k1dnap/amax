@@ -1,0 +1,28 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+    {%if page_type == 'create'%}
+    <h1>Новая карта: {{page_name}}</h1>
+    {%endif%}
+    {%if page_type == 'edit'%}
+    <h1>Редактирование карты: {{page_name}} - {{object1.name}}</h1>
+    {%endif%}
+    <form method="POST" class="post-form">{% csrf_token %}
+    {%if page == 'user'%}
+    {{ user_form.as_p }}
+    {{ profile_form.as_p }}    
+    {%else%}
+    {{ form.as_p }}
+    {%endif%}
+    {%if editformset%}
+    {{ editformset.management_form }}
+    {% for zxz in editformset %}
+    {{ zxz.as_table }}
+    <br/>
+    {% endfor %}
+    {%endif%}
+    <hr/>
+        <button type="submit" class="save btn btn-default pull-right">{%if page_type == 'create'%}Создать{%else%}Сохранить{%endif%}</button>
+    </form>
+</div>
+{% endblock %}

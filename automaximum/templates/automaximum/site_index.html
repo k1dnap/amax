@@ -1,0 +1,14 @@
+
+
+<a href="{% url 'sign'%}?action=login">Авторизация</a>
+<br/>
+
+<a href="##">Картотека на сайте</a>
+<br/>
+{% if user.is_staff or user.is_superuser %}
+<a href="{% url 'trading'%}">Торговая</a>
+{%endif%}
+<br>level   login   pass<br>
+admin: '1', 'tachikoma228'
+<br>staff: '2', 'tachikoma228'
+<br>user: '3', 'tachikoma228', or none

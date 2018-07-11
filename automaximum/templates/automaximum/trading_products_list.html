@@ -1,0 +1,304 @@
+{% extends 'automaximum/trading_base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="container">
+
+        <div class="btn-group">
+            <a href="{% url 'trading_products_list'%}" class="save btn btn-default{% if button_bar == 'trading_products_list' %} active{% endif %}" role="button" aria-pressed="true">Картотека</a> 
+            <a href="{% url 'trading_products_list'%}?view_type=argus" class="save btn btn-default{% if button_bar == 'trading_products_list_argus' %} active{% endif %}" role="button" aria-pressed="true">Аргус</a> 
+        </div>     
+        <div class="btn-group pull-right">
+        <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default"  role="button" aria-pressed="true">Новая карта товара</a> 
+        </div>  
+
+    <br/> 
+    <br/>
+    
+    <ul class="nav nav-tabs">
+        <li{%if type == "name"%} class="active"{%endif%}><a data-toggle="tab" href="#menu0">Название</a></li>
+        <li{%if type == "car"%} class="active"{%endif%}><a data-toggle="tab" href="#menu1">Машина</a></li>
+        <li{%if type == "engine"%} class="active"{%endif%}><a data-toggle="tab" href="#menu2">Двигатель</a></li>
+        <li{%if type == "category"%} class="active"{%endif%}><a data-toggle="tab" href="#menu3">Категория</a></li>
+        <li{%if type == "chars"%} class="active"{%endif%}><a data-toggle="tab" href="#menu4">Характеристика</a></li>
+        <li{%if type == "manufact"%} class="active"{%endif%}><a data-toggle="tab" href="#menu5">Производитель</a></li>
+    </ul>   
+    
+    <div class="tab-content">
+            <br/>
+        <div id="menu0" class="tab-pane fade{%if type == "name"%} in active{%endif%}">
+            <form method="GET" class="form-inline">
+                <div class="form-group">
+                    <input type="hidden" name="type" value="name">
+                    <input type="text" placeholder="Наименование" name="search_product" id="search_product_article" class="form-control m2m" value = '{%if type == "name"%}{{request.GET.search_product}}{%endif%}'>
+                    <button type="submit" class="btn btn-default my-1">Поиск</button>
+                </div>
+            </form>
+            <br/>
+            <itemname id="itemname">
+            {%if items_product %}
+            {% for product in items_product %}
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            {% endfor %}
+            {%endif%}
+            {%if type == "name" and item != '' and items_product.count < 1%}
+            Не найдено по запросу: {{item}}
+            {%endif%}
+            </itemname>
+        </div>
+        <div id="menu1" class="tab-pane fade{%if type == "car"%} in active{%endif%}">
+            <form method="GET" class="form-inline">
+                <div class="form-group">
+                    <input type="hidden" name="type" value="car">
+                    <input type="text" placeholder="Название\номер кузова" name="search_product" id="search_product" class="form-control" value = '{%if type == "car"%}{{request.GET.search_product}}{%endif%}'>
+                    <button type="submit" class="btn btn-default my-1">Поиск</button>
+                </div>
+            </form>
+            {%if not currcar %}
+            <br/>
+            {%endif%}
+            {%if currcar and car_all%}
+            <h4>Подкатегории:</h4>
+            {%endif%}
+            {% for car in car_all %}
+            <li><a href="{% url 'trading_products_list' %}?type=car&search_product={{car.full_name}}">{{car.full_name}}</a></li>
+            {% endfor %}
+            {%if currcar != None%}
+            <h3>{{currcar}}:</h3>
+            <button data-toggle="collapse" data-target="#bycat" class="btn btn-default my-1">По категориям</button>
+            <div id="bycat" class="collapse">
+                {%if car_products_list%}
+                {% regroup car_products_list by category.name as car_cat_list %}
+                {% for zxc in car_cat_list %}
+                <h4>{{ zxc.grouper }}:</h4>
+                    {% for kas in zxc.list|dictsort:'full_name' %}
+                    <p><a class = "add_to_basket" href="" data-product-id="{{kas.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{kas.pk}}">{{kas.full_name}}</a></p>
+                    {% endfor %}
+                {% endfor %}
+                {%else%}
+                empty
+                {%endif%}
+            </div>
+            <br/>
+            <br/>
+            <button data-toggle="collapse" data-target="#bypartof" class="btn btn-default my-1">По части автомобиля</button>
+            <div id="bypartof" class="collapse">
+            {%if smset2%}
+            {%for ore in smset2%}
+            {%for djs in ore|slice:"1"%}
+            <h4>{{djs}}:</h4>
+            {%endfor%}
+            {%for hud in ore|slice:"1:"|dictsort:'product.full_name'%}
+            <p><a class = "add_to_basket" href="" data-product-id="{{hud.product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{hud.product.pk}}">{{hud.product.full_name}}</a></p>
+            {%endfor%}
+            {%endfor%}
+            {%else%}
+            empty
+            {%endif%}
+            </div>
+            {%endif%}
+        </div>
+        <div id="menu2" class="tab-pane fade{%if type == "engine"%} in active{%endif%}">
+            <form method="GET" class="form-inline">
+                    <div class="form-group">
+                        <input type="hidden" name="type" value="engine">
+                        <input type="text" name="search_product" placeholder="Двигатель" id="search_product" class="form-control" value = '{%if type == "engine"%}{{request.GET.search_product}}{%endif%}'>
+                        <button type="submit" class="btn btn-default my-1">Поиск</button>
+                    </div>
+            </form>
+            {%if engine_all %}
+            <br/>
+            {%endif%}
+            {% for engine in engine_all %}
+            <li><a href="{% url 'trading_products_list' %}?type=engine&search_product={{engine.name}}">{{engine.name}}</a></li>
+            {% endfor %}
+            {%if engin %}
+            {%if engin.count > 1%}
+            {%else%}
+            <h3>{{engin}}:</h3>
+            {%endif%}
+            {%else%}
+            {%if type == "engine" and item != ''%}
+            <br/>
+            Не найдено по запросу: {{item}}
+            {%endif%}
+            {%endif%}
+            {% for product in engine_list %}
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            {% endfor %}
+        </div>
+        <div id="menu3" class="tab-pane fade{%if type == "category"%} in active{%endif%}">
+            <form method="GET" class="form-inline">
+                    <div class="form-group">
+                        <input type="hidden" name="type" value="category">
+                        <input type="text" name="search_product" placeholder="Категория" id="search_product" class="form-control" value = '{%if type == "category"%}{{request.GET.search_product}}{%endif%}'>
+                        <button type="submit" class="btn btn-default my-1">Поиск</button>
+                    </div>
+                </form>
+                {%if cat_all %}
+                <br/>
+                {%endif%}
+                {% for cat in cat_all %}
+                <li><a href="{% url 'trading_products_list' %}?type=category&search_product={{cat.name}}">{{cat.full_name}}</a></li>
+                {% endfor %}
+                {%if subcat_list%}
+                <h4>Подкатегории:</h4>
+                {%endif%}
+                {%for kas in subcat_list%}
+                <li><a href="{% url 'trading_products_list' %}?type=category&search_product={{kas.name}}">{{kas.full_name}}</a></li>
+                {%endfor%}
+                {%if categor %}
+                    {%if categor.count > 1%}
+                    {%else%}
+                    <h3>{{categor}}:</h3>                
+                    <h4>В категории:</h4>
+                    {%endif%}
+                {%else%}
+                    {%if type == "category" and item != ''%}
+                    <br/>
+                    Не найдено по запросу: {{item}}
+                    {%endif%}
+                {%endif%}
+                {% for product in curr_cat|dictsort:'full_name' %}
+                <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+                {% endfor %}
+                {%if cat_list%}
+                <h4>В подкатегориях:</h4>
+                {%endif%}
+                {% regroup cat_list by category.name as cat_cat_list %}
+                {% for zxc in cat_cat_list %}
+                <h4>{{ zxc.grouper }}:</h4>
+                    {% for kas in zxc.list %}
+                        <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_list' %}?type=category&search_product={{kas.name}}">{{kas.full_name}}</a></p>
+                    {% endfor %}
+                {% endfor %}
+
+        </div>
+        <div id="menu4" class="tab-pane fade{%if type == "chars"%} in active{%endif%}">
+            {% for cat in char_cat_all %}
+            <li><a href="{% url 'trading_products_list' %}?type=chars&search_product={{cat.name}}">{{cat}}</a></li>
+            {% endfor %}
+            {%if quests%}
+            <h3>{{quests.name}}:</h3>
+            {%endif%}
+            {%if charsel and quests%}
+
+            <form method="GET">
+                <input type="hidden" name="type" value="chars">
+                <input type="hidden" name="search_product" value="{{item}}">     
+                {% for as in charsel %}
+                {%if as.type == "choice"%}
+                <label for="Search_product">{{as}}: </label>
+                <br/>
+                {%endif%}
+                <div class="row" style="padding-left: 15px;padding-right: 15px;">
+                {%if as.type == "int"%}
+                <div class="col-xs-6" style="padding-left: 0px;padding-right: 0px;">
+                <input type="number" class="form-control" name="{{as}}" step=0.01 placeholder="{{as}}" id="{{as}}" maxlength="128" value = '{{request.GET.as}}'>
+            </div>
+            <div class="col-xs-6" style="padding-left: 0px;padding-right: 0px;">
+                <input type="number" class="form-control" name="range_{{as}}" step=0.01 placeholder="Разброс значений" id="range_{{as}}" maxlength="128"> 
+            </div>
+                {%endif%}
+                {%if as.type == "choice"%}
+                <select class="form-control" name="{{as}}"  id="{{as}}">
+                    <option value="" selected="">---------</option>
+                    {%for zam in as.get_choices%}
+                    <option value="{{zam.pk}}">{{zam.text}}</option>
+                    {%endfor%}                  
+                  </select>
+                {%endif%}
+                {%if as.type == "string"%}
+                <input type="text" class="form-control" name="{{as}}" placeholder="{{as}}" id="{{as}}" maxlength="128">
+                {%endif%}
+            </div>
+                {% endfor %}       
+                <br/>
+                <button type="submit" class="btn btn-default my-1" value="submit">Поиск</button>
+            </form>
+            {%if characteristicszz%}
+            <br/>
+            {%for mcx in characteristicszz%}
+            <p><a class = "add_to_basket" href="" data-product-id="{{mcx.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{mcx.pk}}">{{mcx.full_name}}</a></p>
+            {%endfor%}
+            {%else%}
+            {%if dlyaproverkichar %}
+            <br/>
+            Не найдено
+            {%endif%}
+            {%endif%}
+            {%elif quests%}
+            Характеристики отсутствуют
+            {%endif%}
+
+        </div>
+        <div id="menu5" class="tab-pane fade{%if type == "manufact"%} in active{%endif%}">
+                <form method="GET" class="form-inline">
+                        <div class="form-group">
+                            <input type="hidden" name="type" value="manufact">
+                            <input type="text" name="search_product" placeholder="Производитель" id="search_product" class="form-control" value = '{%if type == "manufact"%}{{request.GET.search_product}}{%endif%}'>
+                            <button type="submit" class="btn btn-default my-1">Поиск</button>
+                        </div>
+                    </form>
+            {%if manufact_all %}
+            <br/>
+            {%endif%}
+            {% for manufact in manufact_all %}
+            <li><a href="{% url 'trading_products_list' %}?type=manufact&search_product={{manufact.name}}">{{manufact.name}}</a></li>
+            {% endfor %}
+            {%if manuf %}
+            {%if manuf.count > 1%}
+            {%else%}
+            <h3>{{manuf}}:</h3>
+            {%endif%}
+            {%else%}
+            {%if type == "manufact" and item != ''%}
+            <br/>
+            Не найдено по запросу: {{item}}
+            {%endif%}
+            {%endif%}
+            {% for product in manufact_list %}
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            {% endfor %}
+        </div>
+      </div>
+
+
+    
+
+
+
+</div>
+{% endblock %}
+
+{%block scripts%}
+<script src="{% static 'js/js_product_list.js' %}"></script>
+{%endblock%}
+data-href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}"
+
+<form method="GET" class="form-inline">
+    <div class="form-group">
+        <label for="Search_product">Категория: </label>
+        <input type="hidden" name="type" value="category">
+        <input type="text" name="search_product" id="search_product" class="form-control" value = '{{request.GET.search_product}}'>
+        <button type="submit" class="btn btn-default my-1">Поиск</button>
+    </div>
+</form>
+
+
+https://www.w3schools.com/bootstrap/bootstrap_collapse.asp
+
+<p><a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">Управление товарами</a></p>
+<div class="btn-group">
+        <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
+        <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
+
+
+    </div>    
+    
+    
+
+
+
+    {% for ars in cat_list_products %}
+    <p><a href="{% url 'trading_products_view' %}?object=product&id={{ars.pk}}">{{ars.full_name}}</a></p>
+    {% endfor %}

@@ -1,0 +1,46 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+    <div class="btn-group pull-right">
+            <a href="{% url 'trading_operation_product_edit'%}?operation_id={{operation_product1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a> 
+        </div>  
+    <h3>{{operation_product1}}</h3>
+    <hr>
+    кнопка админа на редактирование
+    <li>Дата: {{operation_product1.created_date}}</li>
+    <li>{%if operation_product1.client%}Клиент: {{operation_product1.client}}{%else%}Склад получатель: {{operation_product1.storage_recieve}}{%endif%}</li>
+    <li>Создано: {{operation_product1.created_by}}</li>
+    <li>Примечание: {{operation_product1.commentary}}</li>
+    <li>Склад: {{operation_product1.storage}}</li>
+    <li>Сумма : {{operation_product1.cash}}</li>
+    <li>Остаток : {{operation_product1.leftovers}}</li>
+    <br>
+    <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#menu0">Товары</a></li>
+            {%if operation_product1.client%}
+            <li><a data-toggle="tab" href="#menu1">Платежи</a></li>
+            {%endif%}
+          </ul>
+        
+          <div class="tab-content">
+            <div id="menu0" class="tab-pane fade in active">
+              <h3>Товары</h3>
+              {%for q in operation_product1.get_prodinstance%}
+                <li><a href="{% url 'trading_products_view' %}?object=product&id={{q.product.pk}}">{{q.product}}</a>: {{q.product_amount}}{%if operation_product1.client%} {{q.product_price}} {{q.totalprice}}{%endif%}</li> 
+              {%endfor%}
+            </div>
+            {%if operation_product1.client%}
+            <div id="menu1" class="tab-pane fade">
+              <h3>Платежи</h3>
+              {%for w in operation_product1.get_cashinstance%}
+                <li><a href="{% url 'trading_operation_cashbox_view' %}?id={{w.operation_money.pk}}">{{w.operation_money}} - {{w.cashbox}}</a>: {{w.cash}}</li> 
+              {%endfor%}
+            </div>
+            {%endif%}
+          </div>
+
+
+
+    
+</div>
+{% endblock %}

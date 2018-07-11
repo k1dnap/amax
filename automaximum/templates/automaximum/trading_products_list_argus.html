@@ -1,0 +1,61 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+            <div class="btn-group">
+                <a href="{% url 'trading_products_list'%}" class="save btn btn-default{% if button_bar == 'trading_products_list' %} active{% endif %}" role="button" aria-pressed="true">Картотека</a> 
+                <a href="{% url 'trading_products_list'%}?view_type=argus" class="save btn btn-default{% if button_bar == 'trading_products_list_argus' %} active{% endif %}" role="button" aria-pressed="true">Аргус</a> 
+            </div>     
+            <div class="btn-group pull-right">
+            <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default" role="button" aria-pressed="true">Новая карта товара</a> 
+            </div>  
+        <br/>
+        <br/>
+        <form method="GET" class="form-inline">
+                <div class="form-group">
+                    <label for="Search_product">Поиск:</label>
+                    <input type="hidden" id="view_type" name="view_type" value="argus">
+                    <input type="text" name="search_product" id="search_product" class="form-control" value = '{{request.GET.search_product}}'>
+                    <button type="submit" class="btn btn-default my-1">Поиск</button>
+                    <label><input type="checkbox" name="state" id="search_product" value="left" {%if state == 'left'%} checked{%endif%}>Остатки</label>
+                    <input class="form-check-input" type="radio" name="search_type" id="search_type" value="name" {% if search_type == 'name'%}checked{%endif%}>
+                    <label class="form-check-label" for="search_type">По названию</label>
+                    <input class="form-check-input" type="radio" name="search_type" id="search_type" value="article"{% if search_type == 'article'%}checked{%endif%}>
+                    <label class="form-check-label" for="search_type">По артиклю</label>
+                
+                </div>
+
+                
+
+            </form>
+<br/>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+            <th>Наименование</th>
+            <th>Артикуль</th>
+            {% for price in price_list %}
+            <th>{{price.name}}</th>
+            {% endfor %}
+            <th>Итого</th>
+            </tr>
+        </thead>
+            <tbody>
+                {%if products_list.count > 0 %}
+                {% for product in products_list %}
+                <tr data-href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}"> 
+                <td>{% if product.argus_name == ''%}{{product.full_name}}{%else%}{{product.argus_name}} {%endif%}</td>
+                <td>{{product.argus_article}}</td>
+                <td>{{product.price1}}</td> 
+                <td>{{product.price2}}</td> 
+                <td>{{product.amount1}}</td>
+                <td>{{product.amount2}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <td>Не найдено по запросу: {{search_product}}</td>
+                {%endif%}
+            </tbody>
+    </table>
+
+</div>
+{% endblock %}

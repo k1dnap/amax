@@ -1,0 +1,187 @@
+
+{% extends 'automaximum/trading_base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="container">   
+<form method="POST" class="post-form"> <h3>{% if page == 'new' %} Новая карта: {{page_name}} {%else%} Редактирование: {{product1}}{% endif %}</h3>
+
+  {% if page == 'edit' %}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
+  <br><hr>
+  {% if page == 'new' %}{% csrf_token %}
+  
+        {{ form.as_p }}
+        {% for asd in form.fields.car.queryset %}
+        {{asd}}
+        {% endfor %}
+    {%else%}
+    {% csrf_token %}
+        {{ form.as_p }}
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#cars">Автомобили</button><br><br>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#engine">Двигатели</button><br><br>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#analogue">Аналоги</button><br><br>
+
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#menu0">Характеристики</a></li>
+            <li><a data-toggle="tab" href="#menu1">Цены</a></li>
+            <li><a data-toggle="tab" href="#menu2">Расположение</a></li>
+        </ul>   
+    <div class="tab-content">
+        <div id="menu0" class="tab-pane fade in active">
+                    <h3>Характеристики</h3>
+                    {{ editformset.management_form }}
+        {% if  product_characteristics.count  > 0 %}
+        
+        {% for characteristics_product_cardForm in editformset %}
+        {{ characteristics_product_cardForm.as_p }}
+        {% endfor %}
+        {%else%}
+        <p>У категории не выбраны характеристики</p>
+        {% endif %}
+        </div>
+        <div id="menu1" class="tab-pane fade">
+                <h3>Цены</h3>
+                {{ priceformset.management_form }}
+                {% for formsz in priceformset %}
+                <h5><strong>{{formsz.instance.price}}:</strong></h5>
+                <div class="row" style="padding-left: 15px;padding-right: 15px;">
+                {% for field in formsz.part1 %}<div class="col-xs-9" style="padding-left: 0px;padding-right: 0px;">{{ field }}</div>{% endfor %}
+                {% for field in formsz.part2 %}<div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">{{ field }}</div>{% endfor %}
+                {% for field in formsz.part3 %}{{field}}{%endfor%}
+                </div>
+                <p>Рекомендуемая: {{formsz.instance.genprice}}</p>
+                {% endfor %}
+        </div>
+        <div id="menu2" class="tab-pane fade">
+            <h3>Расположение</h3>
+                {{ part_of_carformset.management_form }}
+                {% for formsz in part_of_carformset %}
+                {{ formsz.as_p }}
+                <br/>
+                {% endfor %}
+        </div>
+    </div>
+        {% endif %}
+        {% if page == 'new' %}
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#cars">Автомобили</button><br><br>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#engine">Двигатели</button><br><br>
+        {%endif%}
+        
+        <hr>
+        <button type="submit" class="save btn btn-default pull-right">{% if page == 'edit'%}Сохранить{%else%}Создать{%endif%}</button> 
+        
+        <!-- Modal cars -->
+        <div class="modal fade" id="cars" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Машины</h4>
+                </div>
+                <div class="modal-body">
+    
+    
+                        <div class="form-group">
+                            <input type="text" placeholder="Название" data-type="car" class="form-control m2m" value = '{%if type == "engine"%}{{request.GET.search_product}}{%endif%}'>
+                        <br/>
+                        <car_m2m id="carm2m">
+                        </car_m2m>
+                        
+                        <hr>
+                        <h5>Выбранные:</h5>
+                        <is_m2m id="car_listm2m">
+                            {% if page == 'edit' %}
+                            {%for zabr in form.instance.car.all%}
+                            <p><a class = "delline">[-]</a><input type="hidden" name="car" value="{{zabr.pk}}">
+                            {{zabr}}</p>
+                            {%endfor%}
+                            {%endif%}
+                        </is_m2m>
+                        </div>
+                    
+                </div>
+                <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-default my-1">Закрыть</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+                  <!-- Modal engine-->
+        <div class="modal fade" id="engine" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Двигатели</h4>
+                </div>
+                <div class="modal-body">
+    
+    
+                        <div class="form-group">
+                            <input type="text" placeholder="Название" data-type="engine" class="form-control m2m" value = '{%if type == "engine"%}{{request.GET.search_product}}{%endif%}'>
+                        <br/>
+                        <engine_m2m id="enginem2m">
+                        </engine_m2m>
+                        
+                        <hr>
+                        <h5>Выбранные:</h5>
+                        <is_m2m id="engine_listm2m">
+                            {% if page == 'edit' %}
+                            {%for zabr in form.instance.engine.all%}
+                            <p><a class = "delline">[-]</a><input type="hidden" name="engine" value="{{zabr.pk}}">
+                            {{zabr}}</p>
+                            {%endfor%}
+                            {%endif%}
+                        </is_m2m>
+                        </div>
+                    
+                </div>
+                <div class="modal-footer">
+                  <button type="button" data-dismiss="modal" class="btn btn-default my-1">Закрыть</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% if page == 'edit' %}
+          <!-- Modal analogue-->
+          <div class="modal fade" id="analogue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Аналоги</h4>
+                  </div>
+                  <div class="modal-body">
+      
+      
+                          <div class="form-group">
+                              <input type="text" placeholder="Название" data-type="analogue" data-categoryid='{{product1.category.pk}}' data-prodid='{{product1.pk}}' class="form-control m2m" value = '{%if type == "engine"%}{{request.GET.search_product}}{%endif%}'>
+                          <br/>
+                          <analogue_m2m id="analoguem2m">
+                          </analogue_m2m>
+                          
+                          <hr>
+                          <h5>Выбранные:</h5>
+                          <is_m2m id="analogue_listm2m">
+                              {%for zabr in form.instance.analogue.all%}
+                              <p><a class = "delline">[-]</a><input type="hidden" name="analogue" value="{{zabr.pk}}">
+                              {{zabr}}</p>
+                              {%endfor%}
+                          </is_m2m>
+                          </div>
+                      
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default my-1">Закрыть</button>
+                  </div>
+                </div>
+              </div>
+            </div>{%endif%}          
+          </form>
+        </div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/js_product_create.js' %}"></script>
+{% endblock %}

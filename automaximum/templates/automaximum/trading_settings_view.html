@@ -1,0 +1,185 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+
+{%if page_type == 'client_list'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=client" class="save btn btn-default" role="button" aria-pressed="true">Новый клиент</a> 
+    </div> 
+    <h4><strong>Управление Клиентами</strong> </h4>
+
+    {%for client in client_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=client&id={{client.pk}}">{{client.name}}</a></p>
+    {%endfor%}
+{%endif%}
+
+{%if page_type == 'cashbox'%}
+
+    {%if object == 'cashbox_operation'%}
+    <h4><strong>Управление Кассовыми операциями</strong> </h4>
+    <p><a href="{% url 'trading_settings_view'%}?type=cashbox&object=type_operation_money">Виды кассовых операций</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=cashbox&object=cashbox">Кассы</a></p>
+    {%endif%}
+
+    {%if object == 'type_operation_money'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=type_operation_money" class="save btn btn-default" role="button" aria-pressed="true">Новый вид кассовой операции</a> 
+    </div> 
+    {%for type_operation_money in type_operation_money_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=type_operation_money&id={{type_operation_money.pk}}">{{type_operation_money.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+    {%if object == 'cashbox'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=cashbox" class="save btn btn-default" role="button" aria-pressed="true">Новый касса</a> 
+    </div>
+    {%for cashbox in cashbox_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=cashbox&id={{cashbox.pk}}">{{cashbox.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+
+
+{%endif%}
+
+{%if page_type == 'product'%}
+
+    {%if object == 'product_operation'%}
+    <h4><strong>Управление товарными операциями</strong> </h4>
+    <p><a href="{% url 'trading_settings_view'%}?type=product&object=type_operation_product">Виды товарных операций</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product&object=storage">Склады</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product&object=price">Цены</a></p>
+    {%endif%}
+
+    {%if object == 'type_operation_product'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=type_operation_product" class="save btn btn-default" role="button" aria-pressed="true">Новый вид товарной операции</a> 
+    </div> 
+    {%for type_operation_product in type_operation_product_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=type_operation_product&id={{type_operation_product.pk}}">{{type_operation_product.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+    {%if object == 'storage'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=storage" class="save btn btn-default" role="button" aria-pressed="true">Новый склад</a> 
+    </div>
+    {%for storage in storage_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=storage&id={{storage.pk}}">{{storage.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+    {%if object == 'price'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=price" class="save btn btn-default" role="button" aria-pressed="true">Новая цена</a> 
+    </div>
+    {%for price in price_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=price&id={{price.pk}}">{{price.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+
+{%endif%}
+
+{%if page_type == 'product_list'%}
+
+    {%if object == 'product_list'%}
+    <h4><strong>Управление товарами</strong> </h4>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=car">Машины</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=engine">Двигатели</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=category">Категории</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=manufacturer">Производители</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=characteristics">Характеристики</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=product_list&object=part_of">Расположение</a></p>
+    {%endif%}
+
+    {%if object == 'car'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=car" class="save btn btn-default" role="button" aria-pressed="true">Новая машина</a> 
+    </div> 
+    {%for car in car_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=car&id={{car.pk}}">{{car.full_name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+    {%if object == 'engine'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=engine" class="save btn btn-default" role="button" aria-pressed="true">Новый двигатель</a> 
+    </div>
+    {%for engine in engine_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=engine&id={{engine.pk}}">{{engine.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+    {%if object == 'category'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=category" class="save btn btn-default" role="button" aria-pressed="true">Новая категория</a> 
+    </div>
+    {%for category in category_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=category&id={{category.pk}}">{{category.full_name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+    {%if object == 'manufacturer'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=manufacturer" class="save btn btn-default" role="button" aria-pressed="true">Новый производитель</a> 
+    </div>
+    {%for manufacturer in manufacturer_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=manufacturer&id={{manufacturer.pk}}">{{manufacturer.name}}</a></p>
+    {%endfor%} 
+    {%endif%}    
+    {%if object == 'characteristics'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=characteristics" class="save btn btn-default" role="button" aria-pressed="true">Новая характеристика</a> 
+    </div>
+    {%for characteristics in characteristics_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=characteristics&id={{characteristics.pk}}">{{characteristics.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+    {%if object == 'part_of'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=part_of" class="save btn btn-default" role="button" aria-pressed="true">Новое Расположение</a> 
+    </div>
+    {%for part_of in part_of_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=part_of&id={{part_of.pk}}">{{part_of.name}}</a></p>
+    {%endfor%} 
+    {%endif%}    
+
+
+{%endif%}
+
+{%if page_type == 'user'%}
+
+    {%if object == 'user'%}
+    <h4><strong>Управление товарами</strong> </h4>
+    <p><a href="{% url 'trading_settings_view'%}?type=user&object=user_profile">Пользователи</a></p>
+    <p><a href="{% url 'trading_settings_view'%}?type=user&object=access_level">Уровни доступа</a></p>
+    {%endif%}
+
+    {%if object == 'user_profile'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=user_profile" class="save btn btn-default" role="button" aria-pressed="true">Новый пользователь</a> 
+    </div> 
+    {%for user_profile in user_profile_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=user_profile&id={{user_profile.pk}}">{{user_profile.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+    {%if object == 'access_level'%}
+    <div class="btn-group pull-right">
+        <a href="{% url 'trading_settings_manage' %}?type=create&object=access_level" class="save btn btn-default" role="button" aria-pressed="true">Новый уровень доступа</a> 
+    </div>
+    {%for access_level in access_level_list%}
+    <p><a href="{% url 'trading_settings_manage'%}?type=edit&object=access_level&id={{access_level.pk}}">{{access_level.name}}</a></p>
+    {%endfor%} 
+    {%endif%}
+
+
+
+{%endif%}
+</div>
+  
+  
+
+{% endblock %}

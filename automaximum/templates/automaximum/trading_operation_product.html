@@ -1,0 +1,89 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container"> 
+  <div class="row">
+    <div class="dropdown col-md-4">
+      <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type_operation_product1.name}}
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+      {% for type_operation_product in type_operation_product_all %}
+      <li><a href="?sort_type={{type_operation_product.pk}}">{{type_operation_product.name}}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+      <a href="{% url 'trading_operation_product_create'%}?operation_id={{type_operation_product1.pk}}" class="save btn btn-default pull-right" role="button" aria-pressed="true">Новая</a> 
+  </div>
+  <br/>
+  <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+            <th>Дата</th>
+            <th>Склад</th>
+            <th>{%if type_operation_product1.type == 'minusplus'%}Склад-получатель{%else%}Клиент{%endif%}</th>
+            <th>Сумма</th>
+            <th>Остаток</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for operation_product in operation_product1 %}
+            <tr {%if operation_product.approved == False%}class="success"{%endif%} data-href="{% url 'trading_operation_product_view'%}?id={{operation_product.pk}}"> 
+            <td>{{operation_product.created_date|date:"SHORT_DATE_FORMAT"}}</td>
+            <td>{{operation_product.storage}}</td>
+            <td>{%if operation_product.storage_recieve%}{{operation_product.storage_recieve}}{%else%}{{operation_product.client}}{%endif%}</td> 
+            <td>{{operation_product.cash}}</td> 
+            <td>{{operation_product.leftovers}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          </table>
+        </div>     
+</div>
+
+
+{% endblock %}
+44
+
+
+<form method="GET" class="form-inline">
+            
+    <div class="form-group">
+      <label for="sort_type">Операция</label>
+      <select class="form-control" id="sort_type" name="sort_type">
+            {% for type_operation_product in type_operation_product_all %}
+            <option value="{{type_operation_product.pk}}"{% if type_operation_product == type_operation_product1 %}  selected {%endif%}>{{type_operation_product.name}}</option>
+            {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+  </form>
+
+
+
+
+<div class="container">
+  
+Баланс : <strong>{{cashbox1.cash}}</strong> <a href="{% url 'trading_operation_cashbox_new' pk=cashbox1.pk %}" class="save btn btn-default pull-right" role="button" aria-pressed="true">Новая</a> 
+<table class="table table-hover">
+<thead>
+  <tr>
+  <th>Дата</th>
+  <th>Вид</th>
+  <th>Клиент</th>
+  <th>Сумма</th>
+  <th>Остаток</th>
+  </tr>
+</thead>
+<tbody>
+  {% for operation_money in operation_money1 %}
+  <tr data-href="{% url 'trading_operation_cashbox_edit' pk=operation_money.pk %}"> 
+  <td>{{operation_money.created_date}}</td>
+  <td>{{operation_money.type}}</td>
+  <td>{{operation_money.client}}</td> 
+  <td>{{operation_money.cash}}</td> 
+  <td>{{operation_money.leftovers}}</td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+</div>

@@ -1,0 +1,5 @@
+.dropdown-menu li span {
+    white-space: nowrap;
+    padding-left: 5px;
+    padding-right: 5px;
+}

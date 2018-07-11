@@ -1,0 +1,26 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+<h3>Новая кассовая операция {{object}}</h3>
+<form method="POST" class="post-form">{% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit" class="save btn btn-default">Save</button>
+
+    <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#menu0">Платежи</a></li>
+          </ul>   
+          
+          <div class="tab-content">
+            <div id="menu0" class="tab-pane fade in active">
+              <h3>Платежи</h3>
+              {{ editformset.management_form }}
+              {% for operation_product_cashbox_instanceForm in editformset %}
+              {{ operation_product_cashbox_instanceForm.as_table }}
+              <br/>
+              {% endfor %}
+            </div>
+          </div>
+
+</form>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Торговая</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    {% block css %}
+    {% endblock %}
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="{% static 'js/ie8-responsive-file-warning.js' %}"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'js/html5shiv.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Открыть панель навигации</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+              <!-- active navbar -->
+            <li{% if nav_bar == 'trading_operation_product' %} class="active"{% endif %}><a href="{% url 'trading_operation_product'%}">Товарные операции</a></li>
+            <li{% if nav_bar == 'trading_operation_cashbox' %} class="active"{% endif %}><a href="{% url 'trading_operation_cashbox'%}">Денежные операции</a></li>
+            <li{% if nav_bar == 'trading_products_list' %} class="active"{% endif %}><a href="{% url 'trading_products_list'%}">Картотека</a></li>
+            {% if user.is_superuser %}<li{% if nav_bar == 'trading_settings' %} class="active"{% endif %}><a href="{% url 'trading_settings'%}">Настройки</a></li>{%endif%}
+          </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Товары <span id="products_in_basket_count">
+                    {% if products_in_basket_count %}
+                        ({{ products_in_basket_count }})
+                    {% else %}
+                        (0)
+                    {% endif %}
+                </span> <b class="caret"></b></a>
+                <ul class="dropdown-menu" id = "basket-list">
+                    {% if products_in_basket_count %}
+                    <li><span><a id="clearbasket" data-user-id="{{userstaff.pk}}" data-amount="1">Очистить товары </a></span></li><br/>
+                    {% else %}
+                    <li><span>Товаров нет</span></li>
+                    {% endif %}
+                    {% for trading_product_in_basket in trading_product_in_basket_list %}
+                    <li>
+                        <span><a class="delete-item"  data-product-id="{{trading_product_in_basket.product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[-]</a>{{ trading_product_in_basket.product.full_name }} {{ trading_product_in_basket.value }} шт.
+                      </span></li>
+                {% endfor %}
+                <li><span><a data-toggle="modal" data-target="#formoperation">Сформировать</a></span></li>
+                </ul>
+            </li>  
+            <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.username}}<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="{% url 'sign'%}?action=logout">Выйти</a></li>
+                      <li><a href="#">Another action</a></li>
+                      <li><a href="#">Something else here</a></li>
+                      <li class="divider"></li>
+                      <li class="dropdown-header">Nav header</li>
+                      <li><a href="#">Separated link</a></li>
+                      <li><a href="#">One more separated link</a></li>
+                    </ul>
+            </li> 
+        </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+      
+      <!-- Modal -->
+      <div class="modal fade" id="formoperation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">Сформировать операцию</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <form method="GET" action="/trading/operation_product/create">
+                    <div class="form-group">
+                        <input type="hidden" name="init" value="val">
+                        <select name="operation_id"  class="form-control">
+                          {%for qwoperation in operation_types%}
+                            <option value="{{qwoperation.pk}}">{{qwoperation.name}}</option>
+                          {%endfor%}
+                          </select>
+                    
+                    </div>
+                
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-default my-1">Сформировать</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% block content %}
+    {% endblock %}
+    
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery_add.js' %}"></script>
+    <script src="{% static 'js/ajax.js' %}"></script>
+    {% block scripts %}
+    {% endblock %}
+  </body>
+</html>

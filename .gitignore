@@ -1,0 +1,10 @@
+*.pyc
+*~
+__pycache__
+virtualenv
+db.sqlite3
+/static
+.DS_Store
+strt.cmd
+init.cmd
+example

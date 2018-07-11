@@ -1,0 +1,37 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+<h3>{% if page == 'edit'%}Редактирование денежной операции: {{operation_money1}}{%else%}Новая денежная операция{%endif%} </h3>
+<form method="POST" class="post-form">{% if page == 'edit'%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
+  <br><hr>{% csrf_token %}
+    {{ form.as_p }}
+    
+    
+
+    <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#menu0">Платежи</a></li>
+          </ul>   
+          
+          <div class="tab-content">
+            <div id="menu0" class="tab-pane fade in active">
+              <h3>Платежи</h3>
+              {{ editformset.management_form }}
+              
+              {% for operation_product_cashbox_instanceForm in editformset %}
+              <div class="row" style="padding-left: 15px;padding-right: 15px;">
+                  <div class="col-xs-9" style="padding-left: 0px;padding-right: 0px;">{{ operation_product_cashbox_instanceForm.part1 }}</div>
+                  <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">{{ operation_product_cashbox_instanceForm.part2 }}</div>
+                  {% for hidden in operation_product_cashbox_instanceForm.hidden_fields %}
+                  {{ hidden }}
+                  {% endfor %}
+            </div>
+              <br/>
+              {% endfor %}
+            </div>
+          </div>
+          <hr>
+          <button type="submit" class="save pull-right btn btn-default">{% if page == 'edit'%}Сохранить{%else%}Создать{%endif%}</button>
+          
+</form>
+</div>
+{% endblock %}

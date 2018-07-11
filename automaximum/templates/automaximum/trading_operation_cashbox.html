@@ -1,0 +1,52 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+        <div class="row">
+                <div class="dropdown col-md-4">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{cashbox1.name}}
+                  <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                  {% for cashbox in cashbox_all %}
+                  <li><a href="?cashbox={{cashbox.pk}}">{{cashbox.name}}</a></li>
+                  {% endfor %}
+                  </ul>
+                </div>
+              <div class="dropdown pull-right">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    Создать
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=plus">Приход</a></li>
+                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minus">Расход</a></li>
+                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minusplus">Перемещение</a></li>
+                    </ul>
+              </div>
+            </div> 
+<h4>Баланс : <strong>{{cashbox1.cash}}</strong> </h4>
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+        <th>Дата</th>
+        <th>Вид</th>
+        <th>Клиент</th>
+        <th>Сумма</th>
+        <th>Остаток</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for operation_money in operation_money1 %}
+        <tr data-href="{% url 'trading_operation_cashbox_view'%}?id={{operation_money.pk}}"> 
+        <td>{{operation_money.created_date|date:"SHORT_DATE_FORMAT"}}</td>
+        <td>{{operation_money.type}}</td>
+        <td>{%if operation_money.type.type == "minusplus"%}{{operation_money.cashbox_recieve}}{%else%}{{operation_money.client}}{%endif%}</td> 
+        <td>{{operation_money.cash}}</td> 
+        <td>{{operation_money.leftovers}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+{% endblock %}
+

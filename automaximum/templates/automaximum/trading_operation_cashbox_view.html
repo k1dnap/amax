@@ -1,0 +1,29 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<div class="container">
+        <div class="btn-group pull-right">
+                <a href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{operation_money1.cashbox.pk}}&type=edit&object={{operation_money1.type.type}}&operation_id={{operation_money1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a> 
+            </div>  
+        <h3>{{operation_money1}}</h3>
+        <hr>
+        <li>Дата: {{operation_money1.created_date}}</li>
+        <li>{%if operation_money1.client%}Клиент: {{operation_money1.client}}{%else%}Касса получатель: {{operation_money1.cashbox_recieve}}{%endif%}</li>
+        <li>Сумма : {{operation_money1.cash}}</li>
+        <li>Остаток : {{operation_money1.leftovers}}</li>
+        <li>Примечание: {{operation_money1.commentary}}</li>
+        <br>
+        <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#menu1">Платежи</a></li>
+              </ul>
+            
+              <div class="tab-content">
+                <div id="menu1" class="tab-pane fade in active">
+                  <h3>Платежи</h3>
+                  {%for w in operation_money1.get_cashinstance %}
+                    <li><a href="{% url 'trading_operation_product_view' %}?id={{w.operation_product.pk}}">{{w.operation_product}} - {{w.operation_product.cash}}</a>: {{w.cash}}</li> 
+                  {%endfor%}
+                </div>
+              </div>
+
+    </div>
+{% endblock %}
