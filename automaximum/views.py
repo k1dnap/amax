@@ -50,7 +50,8 @@ def sign(request):
         logout(request)
         return redirect('main')
     if action == 'login':
-        if request.user:
+        print(request.user.is_authenticated)
+        if request.user.is_authenticated == True:
             return redirect('main')
         else:
             if request.method == 'POST':
