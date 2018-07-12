@@ -50,6 +50,7 @@
             <li{% if nav_bar == 'trading_operation_cashbox' %} class="active"{% endif %}><a href="{% url 'trading_operation_cashbox'%}">Денежные операции</a></li>
             <li{% if nav_bar == 'trading_products_list' %} class="active"{% endif %}><a href="{% url 'trading_products_list'%}">Картотека</a></li>
             {% if user.is_superuser %}<li{% if nav_bar == 'trading_settings' %} class="active"{% endif %}><a href="{% url 'trading_settings'%}">Настройки</a></li>{%endif%}
+            <li{% if nav_bar == 'trading_additional' %} class="active"{% endif %}><a href="trading_additional">Прочее</a></li>
           </ul>
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -78,12 +79,6 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.username}}<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                       <li><a href="{% url 'sign'%}?action=logout">Выйти</a></li>
-                      <li><a href="#">Another action</a></li>
-                      <li><a href="#">Something else here</a></li>
-                      <li class="divider"></li>
-                      <li class="dropdown-header">Nav header</li>
-                      <li><a href="#">Separated link</a></li>
-                      <li><a href="#">One more separated link</a></li>
                     </ul>
             </li> 
         </ul>

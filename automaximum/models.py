@@ -72,9 +72,9 @@ class client(models.Model):
         return self.name
 #касса
 class cashbox(models.Model):
-    name = models.CharField(max_length=128, blank = False, unique=True)
+    name = models.CharField(max_length=128, blank = False, unique=True, verbose_name='Название')
     cash = models.FloatField(default=0)
-    commentary = models.TextField(blank = True)
+    commentary = models.TextField(blank = True, verbose_name='Примечание')
     admin_cashbox = models.BooleanField(default=False, verbose_name='Касса администратора')
     
     class Meta:
@@ -106,8 +106,8 @@ class car(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
     full_num = models.CharField(max_length=128, blank = True, verbose_name='Полный номер кузова')
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
-    date1 = models.DateField(default=timezone.now, verbose_name='Дата начала выпуска')
-    date2 = models.DateField(default=timezone.now, verbose_name='Дата окончания выпуска')
+    date1 = models.DateField(blank = True, null= True, default=timezone.now, verbose_name='Дата начала выпуска')
+    date2 = models.DateField(blank = True, null= True, default=timezone.now, verbose_name='Дата окончания выпуска')
     engine = models.ManyToManyField(engine, blank = True, verbose_name='Двигатель')
     slug = models.SlugField(blank=True, max_length=128, allow_unicode=True)
     full_name = models.CharField(max_length=128, blank = True)
@@ -163,7 +163,7 @@ class category(models.Model):
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
     characteristics = models.ManyToManyField(characteristics, blank = True, verbose_name='Характеристики')
     full_name = models.CharField(max_length=128, blank = True)
-    useinfullname = models.BooleanField(default=True)
+    useinfullname = models.BooleanField(default=True, verbose_name='Использовать в названии')
     characteristics_forname = models.ManyToManyField('characteristics', blank = True, related_name="characteristics_forname", verbose_name='Характеристики в названии названия')
     class Meta:
         ordering = ['full_name']
@@ -356,8 +356,8 @@ class type_operation_money(models.Model):
     ('plus', 'Приход'),
     ('minusplus', 'Перемещение'),
     )
-    type = models.CharField(max_length=22, blank=False, choices=types, default='minus')
-    name = models.CharField(max_length=100, blank = False, unique=True)
+    type = models.CharField(max_length=22, blank=False, choices=types, default='minus', verbose_name='Вид')
+    name = models.CharField(max_length=100, blank = False, unique=True, verbose_name='Название')
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -392,7 +392,7 @@ class type_operation_product(models.Model):
     ('plus', 'Приход'),
     ('minusplus', 'Перемещение'),
     )
-    type = models.CharField(max_length=22, blank=False, choices=types, default='minus')
+    type = models.CharField(max_length=22, blank=False, choices=types, default='minus', verbose_name='Вид')
     name = models.CharField(max_length=100, blank = False, unique=True, verbose_name='Название')
     creates = models.ForeignKey('type_operation_money', blank = True, null= True, on_delete=models.SET_NULL, verbose_name='Создает кассовую операцию')   
     default_price = models.ForeignKey('price', null= True, blank = True, on_delete=models.SET_NULL, verbose_name='Цена по умолчанию')
@@ -415,7 +415,7 @@ class operation_product(models.Model):
     leftovers = models.FloatField(default = 0)
     state = models.IntegerField(default = 0)
     price = models.ForeignKey('price', null= True, blank = True, on_delete=models.SET_NULL)
-    created_by = models.ForeignKey('user_profile', blank = True, null= True, on_delete=models.SET_NULL) 
+    created_by = models.ForeignKey(User, blank = True, null= True, on_delete=models.SET_NULL) 
     approved = models.BooleanField(default=False)
     class Meta:
         ordering = ["created_date"]

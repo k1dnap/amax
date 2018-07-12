@@ -1,4 +1,4 @@
-$('.delline').click(function() {
+$(document).on('click', '.delline', function() {
     $(this).parent().remove();
 });
 

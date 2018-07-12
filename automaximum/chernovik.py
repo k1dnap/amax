@@ -143,6 +143,13 @@ https://stackoverflow.com/questions/19089901/bootstrap-3-two-forms-on-the-same-l
 https://stackoverflow.com/questions/40931791/bootstrap-form-fields-on-the-same-line
 https://stackoverflow.com/questions/28786475/how-to-put-multiple-bootstrap-inputs-on-same-line
 
+
+http://vladisa.pythonanywhere.com
+https://www.learn-c.org
+
+
+
+
 widgets = {
     'argus_name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название по аргусу'}),
     'commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Текст для описания'}),

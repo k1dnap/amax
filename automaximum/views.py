@@ -50,17 +50,20 @@ def sign(request):
         logout(request)
         return redirect('main')
     if action == 'login':
-        if request.method == 'POST':
-            username = request.POST['username']
-            password = request.POST['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('trading')
+        if request.user:
+            return redirect('main')
         else:
-            return render(request, 'automaximum/login.html',{
-            })    
+            if request.method == 'POST':
+                username = request.POST['username']
+                password = request.POST['password']
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        return redirect('trading')
+            else:
+                return render(request, 'automaximum/login.html',{
+                })    
     return redirect('main')
 
 #ajax
@@ -947,17 +950,24 @@ def trading_settings_manage(request):
                     del form.fields["type"]
                     if characteristics1.type == 'choice':
                         editformset = editformset1(request.POST, queryset=characteristics_choices.objects.filter(characteristics=characteristics1))
-                    if form.is_valid() and editformset.is_valid():
-                        print('doshlo')
-                        characteristics1 = form.save(commit=False)
-                        for kzx in editformset:
-                            print(kzx)
-                            ming = kzx.save(commit=False)
-                            print(ming)
-                            ming.characteristics = characteristics1
-                            ming.save()
-                        characteristics1.save()
-                        return redirect('trading_settings')
+                    if characteristics1.type == 'choice':
+                        if form.is_valid() and editformset.is_valid():
+                            print('doshlo')
+                            characteristics1 = form.save(commit=False)
+                            for kzx in editformset:
+                                print(kzx)
+                                ming = kzx.save(commit=False)
+                                print(ming)
+                                ming.characteristics = characteristics1
+                                ming.save()
+                            characteristics1.save()
+                            return redirect('trading_settings')
+                    else:
+                        if form.is_valid():
+                            print('doshlo')
+                            characteristics1 = form.save(commit=False)
+                            characteristics1.save()
+                            return redirect('trading_settings')
                 else:
                     form = characteristicsForm(instance=characteristics1)
                     del form.fields["type"]
@@ -1499,8 +1509,14 @@ def trading_operation_cashbox(request):
             cashbox_all = cashbox.objects.all().order_by('name')
         else:
             cashbox_all = cashbox.objects.all().filter(admin_cashbox=False).order_by('name')
-        query_cashbox = request.GET.get('cashbox', '1')
-        cashbox1 = get_object_or_404(cashbox, pk=query_cashbox)
+        query_cashbox = request.GET.get('cashbox', '')
+        if query_cashbox == "":
+            cashbox1 = cashbox_all.all()[0]
+        else:
+            if request.user.is_superuser:
+                cashbox1 = get_object_or_404(cashbox, pk=query_cashbox)
+            else:
+                cashbox1 = get_object_or_404(cashbox, pk=query_cashbox, admin_cashbox=False)
         operation_money1 = operation_money.objects.filter(Q(cashbox=cashbox1) | Q(cashbox_recieve=cashbox1)).order_by('-created_date')
         return render(request, 'automaximum/trading_operation_cashbox.html', {
         'nav_bar' : 'trading_operation_cashbox',
@@ -1841,7 +1857,7 @@ def trading_operation_product_create(request):
                             print(operation_product_product_instancez.product_price)
                             print(operation_product_product_instancez.product_amount)
                             print(operation_product.cash)
-                            if operation_product.type.type != 'minusplus':
+                            if operation_product.type.type != 'minusplus' and operation_product_product_instancez.product_amount != '' and operation_product_product_instancez.product_price != '':
                                 operation_product.cash = (operation_product.cash + (operation_product_product_instancez.product_price * operation_product_product_instancez.product_amount))
                             operation_product_product_instancez.operation_product = operation_product
                             if operation_product.type.type == 'plus':
@@ -1900,6 +1916,7 @@ def trading_operation_product_create(request):
             form = operation_productForm()
             form.fields["price"].empty_label=None
             form.fields["created_by"].empty_label=None
+            form.fields["created_by"].queryset = user.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
             if operation_product1.default_price != None:
                 form['price'].initial = operation_product1.default_price
             if operation_product1.default_client != None:
@@ -2087,6 +2104,7 @@ def trading_operation_product_edit(request):
             form = operation_productForm(instance = operation_product1)
             form.fields["client"].empty_label=None
             form.fields["created_by"].empty_label=None
+            form.fields["created_by"].queryset = user.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
             form.fields["storage"].empty_label=None
             form.fields["price"].empty_label=None
             if operation_product1.type.type == "minusplus":

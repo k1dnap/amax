@@ -35,7 +35,6 @@ class cashboxForm(forms.ModelForm):
         model = cashbox
         fields = ('name', 'commentary','admin_cashbox',)
         widgets = {
-            'admin_cashbox': forms.CheckboxInput(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
             'commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Примечание'}),
         }
@@ -74,7 +73,6 @@ class type_operation_productForm(forms.ModelForm):
             'default_price': forms.Select(attrs={'class': 'form-control'}),
             'default_client': forms.Select(attrs={'class': 'form-control'}),
             'creates': forms.Select(attrs={'class': 'form-control'}),
-            'changes_price': forms.CheckboxInput(attrs={'class': 'form-control'}),
 
         }
 #storage
@@ -194,7 +192,6 @@ class categoryForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
             'short_description': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Краткое описание'}),
             'subcategory_of': forms.Select(attrs={'class': 'form-control'}),
-            'useinfullname': forms.CheckboxInput(attrs={'class': 'form-control'}),
             'characteristics': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'characteristics_forname': forms.SelectMultiple(attrs={'class': 'form-control'}),
             }

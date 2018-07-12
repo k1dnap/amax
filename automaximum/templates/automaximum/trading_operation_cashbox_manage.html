@@ -1,9 +1,11 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
 <div class="container">
-<h3>{% if page == 'edit'%}Редактирование денежной операции: {{operation_money1}}{%else%}Новая денежная операция{%endif%} </h3>
-<form method="POST" class="post-form">{% if page == 'edit'%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
-  <br><hr>{% csrf_token %}
+<form method="POST" class="post-form">
+    {% if page == 'edit'%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
+    <h3>{% if page == 'edit'%}Редактирование денежной операции: {{operation_money1}}{%else%}Новая денежная операция{%endif%} </h3>
+    <hr>
+    {% csrf_token %}
     {{ form.as_p }}
     
     

@@ -12,8 +12,8 @@
     <li>Создано: {{operation_product1.created_by}}</li>
     <li>Примечание: {{operation_product1.commentary}}</li>
     <li>Склад: {{operation_product1.storage}}</li>
-    <li>Сумма : {{operation_product1.cash}}</li>
-    <li>Остаток : {{operation_product1.leftovers}}</li>
+    {%if operation_product1.client%}<li>Сумма : {{operation_product1.cash}}</li>{%endif%}
+    {%if operation_product1.client%}<li>Остаток : {{operation_product1.leftovers}}</li>{%endif%}
     <br>
     <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#menu0">Товары</a></li>
