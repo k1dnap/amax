@@ -1917,7 +1917,7 @@ def trading_operation_product_create(request):
             form = operation_productForm()
             form.fields["price"].empty_label=None
             form.fields["created_by"].empty_label=None
-            form.fields["created_by"].queryset = user.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
+            form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
             if operation_product1.default_price != None:
                 form['price'].initial = operation_product1.default_price
             if operation_product1.default_client != None:
@@ -2105,7 +2105,7 @@ def trading_operation_product_edit(request):
             form = operation_productForm(instance = operation_product1)
             form.fields["client"].empty_label=None
             form.fields["created_by"].empty_label=None
-            form.fields["created_by"].queryset = user.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
+            form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
             form.fields["storage"].empty_label=None
             form.fields["price"].empty_label=None
             if operation_product1.type.type == "minusplus":
