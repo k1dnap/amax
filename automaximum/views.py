@@ -1935,9 +1935,9 @@ def trading_operation_product_create(request):
                 print('sa')
         else:
             if init == 'val':
-                editformset = editformset1(queryset=kiss, prefix='products')
+                editformset = editformset1(queryset=kiss)
             else:
-                editformset = editformset1(queryset=operation_product_product_instance.objects.none(), prefix='products')
+                editformset = editformset1(queryset=operation_product_product_instance.objects.none())
             form = operation_productForm()
             form.fields["price"].empty_label=None
             form.fields["created_by"].empty_label=None
