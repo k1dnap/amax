@@ -138,6 +138,21 @@ def trading_ajax(request):
                 return_dict["items"].append(product_dict)
             return_dict["len"] = int(len(return_dict["items"]))
             return JsonResponse(return_dict)
+        elif request.GET.get('subject') == 'prices_val':
+            if int(request.GET.get('count')) > 0:
+                return_dict = dict()
+                return_dict["items"] = list()
+                pri = price.objects.get(pk=request.GET.get('price'))
+                for zxcs in range(int(request.GET.get('count'))):
+                    pro = product.objects.get(pk=request.GET.get('items['+str(zxcs)+']'))
+                    price_valq = price_value.objects.get(product=pro, price = pri)
+                    product_dict = dict()
+                    product_dict["placing"] = str(zxcs)
+                    product_dict["value"] = price_valq.value
+                    return_dict["items"].append(product_dict)
+                    price_valq, pro = None, None
+                return_dict["len"] = int(len(return_dict["items"]))
+                return JsonResponse(return_dict)
     else:
         return redirect('main')
 
@@ -2056,7 +2071,7 @@ def trading_operation_product_edit(request):
                             operation_product_product_instancez.product.deletefree = False
                             operation_product_product_instancez_product = product.objects.get(pk = operation_product_product_instancez.product.pk)
                             operation_product_product_instancez.product.amount0 = operation_product_product_instancez_product.amount0
-                            if operation_product1.type.type != 'minusplus':
+                            if operation_product1.type.type != 'minusplus' and operation_product_product_instancez.product_amount != '' and operation_product_product_instancez.product_price != '':
                                 operation_product1.cash = (operation_product1.cash + (operation_product_product_instancez.product_price * operation_product_product_instancez.product_amount))
                             operation_product_product_instancez.operation_product = operation_product1
                             if operation_product1.type.type == 'plus':

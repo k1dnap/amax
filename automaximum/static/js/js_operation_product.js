@@ -5,7 +5,6 @@ $(document).on('click', '.delline', function() {
 function cloneMore(selector, type) {
     var newElement = $(selector).clone(true);
     var total = $('#id_' + type + '-TOTAL_FORMS').val();
-    console.log(total)
     newElement.find(':input').each(function() {
         var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
         var id = 'id_' + name;
@@ -40,8 +39,6 @@ $(document).on('keyup', '.operation_product_list', function(e){
             data: data,
             cache: false,
             success: function(data){
-                
-                console.log(data.len)
                     if (data.len || data.len == 0){
                         kias.html("");
                     if(data.len == 0){
@@ -64,7 +61,7 @@ $(document).on('keyup', '.operation_product_list', function(e){
     }
 });
 });
-
+jQuery(document).ready(function (){   
 $(document).on('click', '.selecteditem', function() {
     var dataid = $(this).attr("data-id");
     var name = $(this).text();
@@ -83,7 +80,6 @@ $(document).on('click', '.selecteditem', function() {
             data: data,
             cache: false,
             success: function(data){
-                console.log(data.len)
                     if (data.len || data.len == 0){
                     if(data.len == 0){
                     }else{
@@ -99,41 +95,51 @@ $(document).on('click', '.selecteditem', function() {
         });
     }
 });
-
+});
+jQuery(document).ready(function (){   
 $(document).on('change', 'select[name=price]', function() {
     var price =  $( "#id_price" ).val();
-    var allListElements = $( "operas" );
-    $( "#menu0" ).find( "operas" ).each(
+    var senddict = {};
+    senddict.price = price;
+    senddict.items = {};
+    arrr = [];
+    var count = 0;
+    var smth = $( "#menu0" ).find( "operas" );
+    smth.each(
         function(){
-            var value_to = $($(this).find("input")[3]);
             var product_id = $(this).find("input")[1];
-            console.log(value_to);
-            console.log($(product_id).val());
+            var placing = $(product_id).attr("name");
             if ($(product_id).val() != ''){
-                var data = {};
-                data.query = $(product_id).val()
-                data.price = price
-                data.subject = 'price_val'
-                $.ajax({
-                    type: "GET",
-                    url: "/trading/ajax",
-                    data: data,
-                    cache: false,
-                    success: function(data){
-                        console.log(data.items[0].name)
-                            if (data.len || data.len == 0){
-                            if(data.len != 0){
-                                $(value_to).val(data.items[0].name);
-                            }                    
-                            }
-        
-                    },
-                    error: function(){
-                        console.log("error")
-                    }
-                });
+                arrr.push($($(this).find("input")[3]).attr("name"));
+                senddict.items[count] = $(product_id).val();
+                count++;
             }
-
         }
     );
+    senddict.subject = 'prices_val';
+    if (count > 0){
+    senddict.count = count
+    console.log(senddict)
+    $.ajax({
+        type: "GET",
+        url: "/trading/ajax",
+        data: senddict,
+        cache: false,
+        success: function(senddict){
+                if (senddict.len || senddict.len == 0){
+                if(senddict.len != 0){
+                    $.each(senddict.items, function(k, v){
+                        $('#id_'+arrr[v.placing]).val(v.value);
+                     });
+                }                    
+                }
+
+        },
+        error: function(){
+            console.log("error")
+        }
+    });
+    };
 });
+});
+

@@ -88,18 +88,43 @@ editformset = editformset1(request.POST, queryset=characteristics_value.objects.
 
 
 
-$(this).parent().html("");
-$(this).parent().find('ul:last').html("");
+$(document).on('change', 'select[name=price]', function() {
+    var price =  $( "#id_price" ).val();
+    var allListElements = $( "operas" );
+    $( "#menu0" ).find( "operas" ).each(
+        function(){
+            var value_to = $($(this).find("input")[3]);
+            var product_id = $(this).find("input")[1];
+            console.log(value_to);
+            console.log($(product_id).val());
+            if ($(product_id).val() != ''){
+                var data = {};
+                data.query = $(product_id).val()
+                data.price = price
+                data.subject = 'price_val'
+                $.ajax({
+                    type: "GET",
+                    url: "/trading/ajax",
+                    data: data,
+                    cache: false,
+                    success: function(data){
+                        console.log(data.items[0].name)
+                            if (data.len || data.len == 0){
+                            if(data.len != 0){
+                                $(value_to).val(data.items[0].name);
+                            }                    
+                            }
+        
+                    },
+                    error: function(){
+                        console.log("error")
+                    }
+                });
+            }
 
-
-
-
-
-
-
-
-
-
+        }
+    );
+});
 
 
 
