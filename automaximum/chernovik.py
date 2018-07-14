@@ -87,6 +87,23 @@ editformset = editformset1(request.POST, queryset=characteristics_value.objects.
 
 
 
+
+$(this).parent().html("");
+$(this).parent().find('ul:last').html("");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <p><label for="id_category">Category:</label> <select name="category" required="" id="id_category">
   <option value="" selected="">---------</option>
 
@@ -126,29 +143,17 @@ del kkl.fields["choice"]
 
     https://docs.djangoproject.com/en/2.0/topics/forms/#rendering-fields-manually
     https://getbootstrap.com/docs/3.3/css/#forms
-form.fields["type"].queryset = type_operation_money_mm.filter(type=object)
-    
-        if request.user.is_superuser is True:
-            cashbox_all = cashbox.objects.all().order_by('name')
-        else:
-            cashbox_all = cashbox.objects.all().filter(admin_cashbox=False).order_by('name')
-    
-    
-    
-    
-    
+
+                fields = list(kkl)
+                kkl.part1, kkl.part2,kkl.part3 = fields[0], fields[1],fields[2:]
+                fields= None
+
+
 формы в линии:
 https://stackoverflow.com/questions/22888298/bootstrap-3-how-to-get-two-form-inputs-on-one-line-and-other-inputs-on-individu
 https://stackoverflow.com/questions/19089901/bootstrap-3-two-forms-on-the-same-line
 https://stackoverflow.com/questions/40931791/bootstrap-form-fields-on-the-same-line
 https://stackoverflow.com/questions/28786475/how-to-put-multiple-bootstrap-inputs-on-same-line
-
-
-http://vladisa.pythonanywhere.com
-https://www.learn-c.org
-
-
-
 
 widgets = {
     'argus_name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название по аргусу'}),

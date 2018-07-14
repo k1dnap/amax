@@ -114,6 +114,30 @@ def trading_ajax(request):
                         return_dict["items"].append(product_dict)
             return_dict["len"] = int(len(return_dict["items"]))
             return JsonResponse(return_dict)
+        elif request.GET.get('subject') == 'operation_product_list':
+            return_dict = dict()
+            return_dict["items"] = list()
+            if request.GET.get('query')!= '':
+                for mas in product.objects.filter(full_name__icontains=request.GET.get('query')):
+                    product_dict = dict()
+                    product_dict["id"] = mas.pk
+                    product_dict["name"] = mas.full_name
+                    return_dict["items"].append(product_dict)
+            return_dict["len"] = int(len(return_dict["items"]))
+            return JsonResponse(return_dict)
+
+        elif request.GET.get('subject') == 'price_val':
+            return_dict = dict()
+            return_dict["items"] = list()
+            if request.GET.get('query')!= '' and request.GET.get('price') != '':
+                pri = price.objects.get(pk=request.GET.get('price'))
+                pro = product.objects.get(pk=request.GET.get('query'))
+                price_valq = price_value.objects.get(product=pro, price = pri)
+                product_dict = dict()
+                product_dict["name"] = price_valq.value
+                return_dict["items"].append(product_dict)
+            return_dict["len"] = int(len(return_dict["items"]))
+            return JsonResponse(return_dict)
     else:
         return redirect('main')
 
@@ -934,6 +958,7 @@ def trading_settings_manage(request):
                         return redirect('trading_settings')
                 else:
                     form = characteristicsForm()
+                    del form.fields["edinica"]
                     return render(request, 'automaximum/trading_settings_manage.html',{
                         'nav_bar' : 'trading_settings',
                         'form': form,
@@ -953,14 +978,13 @@ def trading_settings_manage(request):
                         editformset = editformset1(request.POST, queryset=characteristics_choices.objects.filter(characteristics=characteristics1))
                     if characteristics1.type == 'choice':
                         if form.is_valid() and editformset.is_valid():
-                            print('doshlo')
                             characteristics1 = form.save(commit=False)
                             for kzx in editformset:
-                                print(kzx)
                                 ming = kzx.save(commit=False)
-                                print(ming)
                                 ming.characteristics = characteristics1
                                 ming.save()
+                                if ming.text == '':
+                                    ming.delete()
                             characteristics1.save()
                             return redirect('trading_settings')
                     else:
@@ -972,8 +996,12 @@ def trading_settings_manage(request):
                 else:
                     form = characteristicsForm(instance=characteristics1)
                     del form.fields["type"]
+                    if characteristics1.type != 'int':
+                        del form.fields["edinica"]
                     if characteristics1.type == 'choice':
                         editformset = editformset1(queryset=characteristics_choices.objects.filter(characteristics=characteristics1))
+                        for ksaq in editformset:
+                            ksaq.fields["text"].label = ''
                     return render(request, 'automaximum/trading_settings_manage.html',{
                         'nav_bar' : 'trading_settings',
                         'characteristics1': characteristics1,
@@ -1836,8 +1864,8 @@ def trading_operation_product_create(request):
             
             editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.none(), prefix='products')
             editformset_cashbox = editformset2(request.POST, queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
-            #for e in editformset_cashbox:
-                #del e.fields["operation_product"]
+            for sdf in editformset_cashbox:
+                sdf.fields["cashbox"].queryset = cashbox.objects.filter(admin_cashbox=False)
             spisaniye = None
             if request.POST.get('approved', '') == 'true':
                 spisaniye = "smth"
@@ -1854,10 +1882,6 @@ def trading_operation_product_create(request):
                         operation_product_product_instancez = z.save()
                         if operation_product_product_instancez.product is not None:
                             operation_product_product_instancez.product.deletefree = False
-                            print(operation_product.cash)
-                            print(operation_product_product_instancez.product_price)
-                            print(operation_product_product_instancez.product_amount)
-                            print(operation_product.cash)
                             if operation_product.type.type != 'minusplus' and operation_product_product_instancez.product_amount != '' and operation_product_product_instancez.product_price != '':
                                 operation_product.cash = (operation_product.cash + (operation_product_product_instancez.product_price * operation_product_product_instancez.product_amount))
                             operation_product_product_instancez.operation_product = operation_product
@@ -1908,7 +1932,7 @@ def trading_operation_product_create(request):
                     removeitemsfrombasket(userstaff.pk)
                 return redirect('/trading/operation_product/list?sort_type=%s' % operation_product.type.pk )                              
             else:
-                print("formainvalid")
+                print('sa')
         else:
             if init == 'val':
                 editformset = editformset1(queryset=kiss, prefix='products')
@@ -1934,11 +1958,13 @@ def trading_operation_product_create(request):
             if operation_product1.type == "minusplus":
                 for zbv in editformset:
                     del zbv.fields["product_price"]
-
             for arms in editformset:
                 if arms.instance.product != None:
                     zae = kiss.get(product=arms.instance.product)
                     arms['product_amount'].initial = float(zae.value)
+                fields = list(arms)
+                arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
+                fields= None
             editformset_cashbox = editformset2(queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for vcv in editformset_cashbox:
                 vcv.fields["cashbox"].label = ''
@@ -1980,6 +2006,7 @@ def trading_operation_product_edit(request):
             editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.filter(operation_product = operation_product1))
             editformset_cashbox = editformset2(request.POST,queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for sdf in editformset_cashbox:
+                sdf.fields["cashbox"].queryset = cashbox.objects.filter(admin_cashbox=False)
                 del sdf.fields["operation_product"]
                 del sdf.fields["operation_money"]
             editformset_payment_edit = editformset3(request.POST,queryset=operation_product_cashbox_instance.objects.filter(operation_product = operation_product1), prefix='payment')
@@ -2060,6 +2087,9 @@ def trading_operation_product_edit(request):
                             operation_product_product_instancez.product.deletefree = False
                             operation_product_product_instancez.product.save()
                             operation_product_product_instancez.save()
+                        else:
+                            if operation_product_product_instancez.pk != None:
+                                operation_product_product_instancez.delete()
                 #ostatki
                 operation_product1.leftovers = operation_product1.cash
                 #пересчет остатков leftovers
@@ -2137,7 +2167,14 @@ def trading_operation_product_edit(request):
                 del asdz.fields["operation_product"]
                 fields = list(asdz)
                 asdz.part1 = fields[0]
-                fields= None                  
+                fields= None  
+            for arms in editformset:
+                arms.ttlprc = None
+                if arms.instance.product and operation_product1.type.type != 'minusplus':
+                    arms.ttlprc = (arms.instance.product_amount *arms.instance.product_price)
+                fields = list(arms)
+                arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
+                fields= None
             return render(request, 'automaximum/trading_operation_product_create.html', {
             'nav_bar' : 'trading_operation_product',
             'editformset': editformset,

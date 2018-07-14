@@ -63,12 +63,13 @@ $(document).on('keyup', '.m2m', function(e){
     e.preventDefault();
     var query = $(this).val();
     var type = $(this).attr("data-type");
-    if (type == 'analogue'){
-        var categoryid = $(this).attr("data-categoryid");
-        var prodid = $(this).attr("data-prodid");
+    if (query.length > 2){
+        if (type == 'analogue'){
+            var categoryid = $(this).attr("data-categoryid");
+            var prodid = $(this).attr("data-prodid");
+        }
+        m2m(query, type, categoryid, prodid)
     }
-    m2m(query, type, categoryid, prodid)
-    
 });
 });
 

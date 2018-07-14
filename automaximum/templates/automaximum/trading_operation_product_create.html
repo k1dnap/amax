@@ -1,9 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% load staticfiles %}
 {% block content %}
-<div class="container">    
-
-
+<div class="container">
 <form method="POST" class="post-form">
     {% if page == 'edit' %}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{% endif %}
     <h3>{% if page == 'new' %} Новая торговая операция: {{operation_product1.name}} {%else%} Редактирование: {{operation_product1.type.name}}{% endif %}</h3>
@@ -26,28 +24,46 @@
       
       <div class="tab-content">
         <div id="menu0" class="tab-pane fade in active">
-          <h3>Товары</h3>s
+          <h3>Товары</h3>
           <a class = "addline">[+]</a>
           {{ editformset.management_form }}
           {% for operation_product_product_instanceForm in editformset %}
-          <p class ="lineup"><a class = "delline">[-]</a> {{ operation_product_product_instanceForm }}</p>
-          {% endfor %}
-          
-          <div class="row" style="padding-left: 15px;padding-right: 15px;">
-            <div class="col-xs-4" style="padding-left: 0px;padding-right: 0px;">
-              <input type="text" class="form-control" placeholder=".col-lg-2">
+          <operas>
+        <div class="row" style="padding-left: 15px;padding-right: 15px;">
+          <a class = "delline">[-]</a>
+          <br/>
+            <div class="{%if operation_product1.type.type != 'minusplus'%}col-xs-4{%else%}col-xs-9{%endif%}" style="padding-left: 0px;padding-right: 0px;">
+                <asdasd class="dropdown">
+                <input type="text" class="form-control dropdown-toggle operation_product_list" data-toggle="dropdown" name="srchbox" {% if operation_product_product_instanceForm.instance.product%}value="{{operation_product_product_instanceForm.instance.product }}"{%endif%} autocomplete="off" placeholder="Наименование">
+                
+                    <ul class="dropdown-menu" style="
+                    margin-top: 0px;
+                ">
+                      <li><span></span></li>
+                    </ul>
+              </asdasd>
+                {{ operation_product_product_instanceForm.part0 }}
             </div>
-            <div class="col-xs-2" style="padding-left: 0px;padding-right: 0px;">
-              <input type="text" class="form-control" placeholder=".col-lg-3">
+            <div class="{%if operation_product1.type.type != 'minusplus'%}col-xs-2{%else%}col-xs-3{%endif%}" style="padding-left: 0px;padding-right: 0px;">
+              {{ operation_product_product_instanceForm.part1 }}
+            </div>
+            {%if operation_product1.type.type != 'minusplus'%}
+            <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">
+              {{ operation_product_product_instanceForm.part2 }}
             </div>
             <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">
-              <input type="text" class="form-control" placeholder=".col-lg-4">
+                <input type="text" class="form-control" name="total" {% if operation_product_product_instanceForm.ttlprc%}value="{{ operation_product_product_instanceForm.ttlprc }}"{%endif%} placeholder="Итого" readonly>
             </div>
-            <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">
-                <input type="text" class="form-control" placeholder=".col-lg-4" readonly>
-              </div>
-          </div>
+            {%endif%}
           
+        </div>
+
+      </operas>
+      {% for hidden in operation_product_product_instanceForm.hidden_fields|slice:"1:2" %}
+      {{ hidden }}
+      {% endfor %}
+        {% endfor %}
+
         </div>
         <div id="menu1" class="tab-pane fade">
           <h3>Платежи</h3>
@@ -59,6 +75,7 @@
         </div>
         <br>
           {% endfor %}
+
         </div>
         <div id="menu2" class="tab-pane fade">
           <h3>Оплата</h3>
@@ -79,38 +96,11 @@
       <button type="submit" class="save btn btn-default pull-right">Сохранить</button>
       
           
-</form>
 
 
+    </form>
 </div>
 {% endblock %}
 {% block scripts %}
 <script src="{% static 'js/js_operation_product.js' %}"></script>
 {% endblock %}
-<ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#menu0">Home</a></li>
-    <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
-  </ul>
-
-  <div class="tab-content">
-    <div id="menu0" class="tab-pane fade in active">
-      <h3>Товары</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </div>
-    <div id="menu1" class="tab-pane fade">
-      <h3>Платежи</h3>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-  </div>
-
-
-<form id="login_form" method="post" action="/sign?action=login">
-    {% csrf_token %}
-    Username: <input type="text" name="username" value="" size="50" />
-    <br />
-    Password: <input type="password" name="password" value="" size="50" />
-    <br />
-
-    <input type="submit" value="submit" />
-</form>
-

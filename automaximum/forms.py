@@ -18,8 +18,8 @@ class operation_product_product_instanceForm(forms.ModelForm):
         model = operation_product_product_instance
         fields = ('product', 'product_amount', 'product_price',)
         widgets = {
-            'product': forms.Select(attrs={'class': 'form-control'}),
-            'product_amount': forms.NumberInput(attrs={'class': 'form-control','rows':"3",'placeholder':'Кол-во'}),
+            'product': forms.HiddenInput(attrs={'class': 'form-control','placeholder':'Продукция'}),
+            'product_amount': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Кол-во'}),
             'product_price': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Цена'})
         }
 

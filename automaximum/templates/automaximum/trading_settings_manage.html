@@ -1,11 +1,12 @@
 {% extends 'automaximum/trading_base.html' %}
+{% load staticfiles %}
 {% block content %}
 <div class="container">
     {%if page_type == 'create'%}
     <h3>Новая карта: {{page_name}}</h3>
     {%endif%}
     {%if page_type == 'edit'%}
-    <h1>Редактирование карты: {{page_name}} - {{object1.name}}</h1>
+    <h3>Редактирование карты: {{page_name}} - {{object1.name}}</h3>
     {%endif%}
     <form method="POST" class="post-form">{% csrf_token %}
     {%if page == 'user'%}
@@ -15,14 +16,23 @@
     {{ form.as_p }}
     {%endif%}
     {%if editformset%}
+    <is_m2m id="menu0">
     {{ editformset.management_form }}
     {% for zxz in editformset %}
-    {{ zxz.as_p }}
-    <br/>
+    <p class ="lineup"><a class = "delline">[-]</a>{{ zxz }}</p>
+    {% for hidden in zxz.hidden_fields %}
+    {{ hidden }}
     {% endfor %}
+    {% endfor %}
+    </is_m2m>
     {%endif%}
     <hr/>
         <button type="submit" class="save btn btn-default pull-right">{%if page_type == 'create'%}Создать{%else%}Сохранить{%endif%}</button>
     </form>
 </div>
+{% endblock %}
+{% block scripts %}
+{%if editformset%}
+<script src="{% static 'js/js_operation_settings_manage.js' %}"></script>
+{%endif%}
 {% endblock %}

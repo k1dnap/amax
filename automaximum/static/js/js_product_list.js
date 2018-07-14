@@ -34,8 +34,9 @@ jQuery(document).ready(function (){
 $(document).on('keyup', '.m2m', function(e){
     e.preventDefault();
     var query = $(this).val();
+    if (query.length > 2){
     ajaprod(query)
-    
+    }
 });
 });
 

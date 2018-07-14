@@ -147,7 +147,7 @@ class characteristics(models.Model):
 
 class characteristics_choices(models.Model):
     characteristics = models.ForeignKey(characteristics, blank = False,null= True, on_delete=models.SET_NULL)
-    text = models.CharField(max_length=128, blank=False, verbose_name='Значение')
+    text = models.CharField(max_length=128, blank=True, verbose_name='Значение')
     class Meta:
         ordering = ['characteristics']
     def __str__(self):
