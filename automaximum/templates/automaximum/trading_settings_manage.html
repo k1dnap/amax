@@ -17,6 +17,7 @@
     {%endif%}
     {%if editformset%}
     <is_m2m id="menu0">
+            <a class = "addline">[+]</a>
     {{ editformset.management_form }}
     {% for zxz in editformset %}
     <p class ="lineup"><a class = "delline">[-]</a>{{ zxz }}</p>

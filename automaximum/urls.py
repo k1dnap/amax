@@ -25,7 +25,9 @@ urlpatterns = [
     url(r'^trading/settings$', views.trading_settings, name = 'trading_settings'),
     url(r'^trading/settings/view$', views.trading_settings_view, name = 'trading_settings_view'),
     url(r'^trading/settings/manage$', views.trading_settings_manage, name = 'trading_settings_manage'),
-    
+    #additional
+    url(r'^trading/additional$', views.trading_additional, name = 'trading_additional'),
+    url(r'^trading/additional/option$', views.trading_additional_option, name = 'trading_additional_option'),
     #test
     url(r'^trading/ajax$', views.trading_ajax, name='trading_ajax'),    
     url(r'^trading/basket$', views.trading_addtobasket, name='trading_addtobasket'),

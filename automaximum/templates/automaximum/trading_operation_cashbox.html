@@ -2,7 +2,8 @@
 {% block content %}
 <div class="container">
         <div class="row">
-                <div class="dropdown col-md-4">
+                <div class="col-xs-12">
+                <asfz class="dropdown">
                   <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{cashbox1.name}}
                   <span class="caret"></span></button>
                   <ul class="dropdown-menu">
@@ -10,17 +11,19 @@
                   <li><a href="?cashbox={{cashbox.pk}}">{{cashbox.name}}</a></li>
                   {% endfor %}
                   </ul>
+                </asfz>
+                  <div class="dropdown pull-right">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                      Создать
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=plus">Приход</a></li>
+                      <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minus">Расход</a></li>
+                      <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minusplus">Перемещение</a></li>
+                      </ul>
                 </div>
-              <div class="dropdown pull-right">
-                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                    Создать
-                    <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=plus">Приход</a></li>
-                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minus">Расход</a></li>
-                    <li><a class="dropdown-item" href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{cashbox1.pk}}&type=create&object=minusplus">Перемещение</a></li>
-                    </ul>
-              </div>
+                </div>
+
             </div> 
 <h4>Баланс : <strong>{{cashbox1.cash}}</strong> </h4>
 <div class="table-responsive">

@@ -1,0 +1,10 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+    <h3>Прочее</h3>
+<li><a href="{% url 'trading_additional_option' %}?type=prices">Цены</a></li> 
+<li><a href="{% url 'trading_additional_option' %}?type=application">Остатки</a></li>
+<li><a href="{% url 'trading_additional_option' %}?type=amount_minus">Минусовой остаток</a></li>
+</div>
+{% endblock %}

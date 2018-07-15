@@ -21,10 +21,10 @@ $(document).on('click', '.addline', function() {
 jQuery(document).ready(function (){    
 $(document).on('keyup', '.operation_product_list', function(e){
     e.preventDefault();
-    var asd = $(this);
     if ($(this).parent().find('.dropdown-menu').is(":hidden")){
         $(this).dropdown('toggle');
       }
+    $(this).parent().parent().find('input:last').val('');
     var kias = $(this).parent().find('ul:last');
     var query = $(this).val();
     
@@ -85,6 +85,8 @@ $(document).on('click', '.selecteditem', function() {
                     }else{
                         var item1 = workplace1.parent().find( "div" )[2];
                         $(item1).find('input:first').val(data.items[0].name);
+                        var multip = $(workplace1.parent().find( "div" )[1]).find('input:first').val();
+                        $(workplace1.parent().find( "div" )[3]).find('input:first').val((multip * data.items[0].name));
                     }                    
                     }
 

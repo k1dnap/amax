@@ -53,7 +53,7 @@ class clientForm(forms.ModelForm):
     
     class Meta:
         model = client
-        fields = ('name', 'adress', 'number', 'price', 'card',)
+        fields = ('name', 'adress', 'number', 'price', 'card', 'supplier',)
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
             'adress': forms.TextInput(attrs={'class': 'form-control','placeholder':'Адресс'}),
@@ -200,13 +200,14 @@ class productForm(forms.ModelForm):
 
     class Meta:
         model = product
-        fields = ('argus_name', 'argus_article', 'article', 'article_alt', 'category', 'manufacturer', 'commentary', 'analogue', 'car', 'engine')
+        fields = ('argus_name', 'argus_article', 'article', 'article_alt', 'category', 'manufacturer', 'commentary', 'monitor_amount', 'min_amount', 'monitor_price', 'analogue', 'car', 'engine')
         widgets = {
             'argus_name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название по аргусу'}),
             'argus_article': forms.TextInput(attrs={'class': 'form-control','placeholder':'Код по аргусу'}),
             'article': forms.TextInput(attrs={'class': 'form-control','placeholder':'Артикул'}),
             'article_alt': forms.TextInput(attrs={'class': 'form-control','placeholder':'Альтернативный артикул'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
+            'min_amount': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Минимальный остаток'}),
             'manufacturer': forms.Select(attrs={'class': 'form-control'}),
             'commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Текст для описания'}),
 }

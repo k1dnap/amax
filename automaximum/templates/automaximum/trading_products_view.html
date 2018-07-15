@@ -35,7 +35,7 @@
                     {% for characteristics_value in product_characteristics|dictsort:'characteristics.name' %}
                     <li>{{characteristics_value.characteristics}}: {%if characteristics_value.characteristics.type == "string"%}<a href="{% url 'trading_products_list' %}?type=chars&search_product={{view_product.category.name}}&{{characteristics_value.characteristics}}={{characteristics_value.text}}">{{characteristics_value.text}}</a>{%endif%}
                                                                   {%if characteristics_value.characteristics.type == "int"%}<a href="{% url 'trading_products_list' %}?type=chars&search_product={{view_product.category.name}}&{{characteristics_value.characteristics}}={{characteristics_value.value|stringformat:"s" }}">{{characteristics_value.value}}</a>{%endif%}
-                                                                  {%if characteristics_value.characteristics.type == "choice"%}<a href="{% url 'trading_products_list' %}?type=chars&search_product={{view_product.category.name}}&{{characteristics_value.characteristics}}={{characteristics_value.choice.pk}}">{{characteristics_value.choice}}</a>{%endif%}</li>
+                                                                  {%if characteristics_value.characteristics.type == "choice"%}<a href="{% url 'trading_products_list' %}?type=chars&search_product={{view_product.category.name}}&{{characteristics_value.characteristics}}={{characteristics_value.choice.pk}}">{%if characteristics_value.choice%}{{characteristics_value.choice}}{%endif%}</a>{%endif%}</li>
                     {%endfor%}
                     <li>Производитель: <a href="{% url 'trading_products_list' %}?type=manufact&search_product={{view_product.manufacturer.name}}">{{view_product.manufacturer}}</a></li>
                     <li>Категория: <a href="{% url 'trading_products_list' %}?type=category&search_product={{view_product.category.name}}">{{view_product.category}}</a></li>
@@ -63,6 +63,7 @@
             </div>
             <div id="menu5" class="tab-pane fade  in active">
                         <h4>Цены</h4>
+                        <li>Закупочная: {{view_product.price0}}</li>
                         {%for xcv in prices%}
                         <li>{{xcv.price}}: {{xcv.value}}</li>
                         {%endfor%}

@@ -59,13 +59,14 @@ class price(models.Model):
 #клиент
 class client(models.Model):
     name = models.CharField(max_length=128, blank = False, unique = True, verbose_name='Название')
-    adress = models.CharField(max_length=128, blank = True, verbose_name='Адресс')
+    adress = models.CharField(max_length=128, blank = True, verbose_name='Адрес')
     number = models.CharField(max_length=32, blank = True, verbose_name='Номер телефона')
     price = models.ForeignKey('price', blank = True, null= True, on_delete=models.SET_NULL, verbose_name='Цена' )
     card = models.CharField(max_length=64, blank = True, verbose_name='Номер карты')
     cash = models.FloatField(default=0)
     created_date = models.DateTimeField(default=timezone.now, verbose_name='дата')
     creator = models.ForeignKey(User, blank = True, null= True, on_delete=models.SET_NULL)
+    supplier = models.BooleanField(default=False, verbose_name='Поставщик')
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -234,6 +235,7 @@ class product(models.Model):
     approved = models.BooleanField(default=True)
     #mozhno li udalit' bez vreda baze dannykh
     deletefree = models.BooleanField(default=True)
+    #удалено
     deleted = models.BooleanField(default=False)
     #хар-ки от категории
     characteristics = models.ManyToManyField(characteristics, through='characteristics_value',
@@ -242,6 +244,11 @@ class product(models.Model):
     #part_of = models.ManyToManyField(car, through='part_of_car',
                         #through_fields=('product','car'),)
     #количество на складах
+    #Минимальный остаток для отслеживания
+    monitor_amount = models.BooleanField(default=True, verbose_name='Отслеживать остаток')
+    min_amount = models.FloatField(blank=True, null=True, default = 2, verbose_name='Минимальный остаток для отслеживания')
+    #Отслеживать цену
+    monitor_price = models.BooleanField(default=True, verbose_name='Отслеживать цену')
     amount = models.ManyToManyField(storage, through='amount_on_storage',
                         through_fields=('product','storage'),) 
     #всего кол-во
@@ -332,19 +339,23 @@ class price_value(models.Model):
     product = models.ForeignKey(product, blank=False, null= True, on_delete=models.SET_NULL)
     value = models.FloatField(blank=True, null=True)
     nacenka = models.FloatField(blank=True, null=True)
+    recomend_price = models.FloatField(blank=True, null=True)
+    monitor_price = models.BooleanField(default=True, verbose_name='Отслеживать цену')
     class Meta:
         ordering = ['price']
-    def genprice(self):
-        modif = self.price.nacenka
+    def save(self, *args, **kwargs):
         if self.nacenka != None and self.nacenka != 0:
             modif = self.nacenka
+        else:
+            modif = self.price.nacenka
         if self.price.analogue == None:
             znach = self.product.price0
         else:
             iud = price_value.objects.get(price=self.price.analogue, product=self.product)
             znach = iud.value
-        rethjk = modif * znach
-        return rethjk
+        self.recomend_price = modif * znach
+        super().save()     
+
     def __str__(self):
         return str(self.price) + ' ' + str(self.product)
 

@@ -218,8 +218,64 @@ def trading_addtobasket(request):
     else:
         return redirect('main')
 
+#additional
+def trading_additional(request):
+    if request.user.is_superuser:
+    
+        return render(request, 'automaximum/trading_additional.html',{
+        'nav_bar' : 'trading_additional',
+        })
+    #user ne staff ili admin
+    else:
+        return redirect('main')
 
-
+def trading_additional_option(request):
+    if request.user.is_superuser:
+        type = request.GET.get('type', '')
+        naming = None
+        button_bar = None
+        obj_list = None
+        #cennik
+        if type == 'prices':
+            naming = 'Цены'
+            if request.GET.get('object') == 'monitor_false':
+                button_bar = 'monitor_false'
+                obj_list = product.objects.filter(monitor_price=False)
+            elif request.GET.get('object') == 'monitor':
+                button_bar = 'monitor'
+                obj_list = set()
+                z = set(price_value.objects.filter(monitor_price=True))
+                for i in z:
+                    if i.recomend_price != i.value:
+                        obj_list.add(i.product)
+        #zayavka
+        elif type == 'application':
+            naming = 'Остатки'
+            if request.GET.get('object') == 'monitor_false':
+                button_bar = 'monitor_false'
+                obj_list = product.objects.filter(monitor_amount=False)
+            elif request.GET.get('object') == 'monitor':
+                button_bar = 'monitor'
+                obj_list = set()
+                z = set(product.objects.filter(monitor_amount=True))
+                for i in z:
+                    if i.amount0 < i.min_amount:
+                        obj_list.add(i)
+        elif type == 'amount_minus':
+            naming = 'Минусовой остаток'
+            obj_list = product.objects.filter(amount0__lt=0)
+        else:
+            return None
+        return render(request, 'automaximum/trading_additional_option.html',{
+        'nav_bar' : 'trading_additional',
+        'naming': naming,
+        'button_bar': button_bar,
+        'obj_list': obj_list,
+        'type' : type,
+        })
+    #user ne staff ili admin
+    else:
+        return redirect('main')
 
 #settings++
 def trading_settings(request):
@@ -1390,7 +1446,7 @@ def trading_products_create(request):
                         amount_on_storage.objects.create(storage=storage, product=product, amount = 0)
                     
                     for price in price_mm:
-                        price_value.objects.create(price=price, product=product, value = 0)                
+                        price_value.objects.create(price=price, product=product, value = 0, monitor_price=product.monitor_price)                
                     
                     product_characteristics = product.category.characteristics.all()
                     for characteristics in product_characteristics:
@@ -1876,8 +1932,10 @@ def trading_operation_product_create(request):
                 del form.fields["client"]
             else:
                 del form.fields["storage_recieve"]
+            if operation_product1.changes_price == True:
+                del form.fields["price"]
             
-            editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.none(), prefix='products')
+            editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.none())
             editformset_cashbox = editformset2(request.POST, queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for sdf in editformset_cashbox:
                 sdf.fields["cashbox"].queryset = cashbox.objects.filter(admin_cashbox=False)
@@ -1908,6 +1966,9 @@ def trading_operation_product_create(request):
                                     product_amount = amount_on_storage.objects.get(product = operation_product_product_instancez.product, storage = operation_product.storage)
                                     product_amount.amount = (product_amount.amount + operation_product_product_instancez.product_amount)
                                     operation_product_product_instancez.product.save()
+                                    if operation_product.type.changes_price == True:
+                                        for ias in price_value.objects.filter(product=operation_product_product_instancez.product):
+                                            ias.save()
                             if operation_product.type.type == 'minus':
                                 if operation_product.approved == True:
                                     operation_product_product_instancez.product.amount0 = (operation_product_product_instancez.product.amount0 - operation_product_product_instancez.product_amount)
@@ -1990,6 +2051,8 @@ def trading_operation_product_create(request):
                 fields = list(vcv)
                 vcv.part1, vcv.part2 = fields[0], fields[1]
                 fields= None
+            if operation_product1.changes_price == True:
+                del form.fields["price"]
             return render(request, 'automaximum/trading_operation_product_create.html', {
             'nav_bar' : 'trading_operation_product',
             'editformset': editformset,
@@ -2018,6 +2081,8 @@ def trading_operation_product_edit(request):
                 del form.fields["client"]
             else:
                 del form.fields["storage_recieve"]
+            if operation_product1.type.changes_price == True:
+                del form.fields["price"]
             editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.filter(operation_product = operation_product1))
             editformset_cashbox = editformset2(request.POST,queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for sdf in editformset_cashbox:
@@ -2082,6 +2147,9 @@ def trading_operation_product_edit(request):
                                     product_amount.amount = (product_amount.amount + operation_product_product_instancez.product_amount)
                                     operation_product_product_instancez.product.amount0 = (operation_product_product_instancez.product.amount0 +  operation_product_product_instancez.product_amount)
                                     operation_product_product_instancez.product.save()
+                                    if operation_product1.type.changes_price == True:
+                                        for ias in price_value.objects.filter(product=operation_product_product_instancez.product):
+                                            ias.save()
                                     product_amount.save()
                             if operation_product1.type.type == 'minus':
                                 if operation_product1.approved == True:
@@ -2190,6 +2258,8 @@ def trading_operation_product_edit(request):
                 fields = list(arms)
                 arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
                 fields= None
+            if operation_product1.type.changes_price == True:
+                del form.fields["price"]
             return render(request, 'automaximum/trading_operation_product_create.html', {
             'nav_bar' : 'trading_operation_product',
             'editformset': editformset,

@@ -50,7 +50,7 @@
             <li{% if nav_bar == 'trading_operation_cashbox' %} class="active"{% endif %}><a href="{% url 'trading_operation_cashbox'%}">Денежные операции</a></li>
             <li{% if nav_bar == 'trading_products_list' %} class="active"{% endif %}><a href="{% url 'trading_products_list'%}">Картотека</a></li>
             {% if user.is_superuser %}<li{% if nav_bar == 'trading_settings' %} class="active"{% endif %}><a href="{% url 'trading_settings'%}">Настройки</a></li>{%endif%}
-            <li{% if nav_bar == 'trading_additional' %} class="active"{% endif %}><a href="trading_additional">Прочее</a></li>
+            <li{% if nav_bar == 'trading_additional' %} class="active"{% endif %}><a href="{% url 'trading_additional'%}">Прочее</a></li>
           </ul>
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">

@@ -11,6 +11,7 @@
     <li>{%if operation_product1.client%}Клиент: {{operation_product1.client}}{%else%}Склад получатель: {{operation_product1.storage_recieve}}{%endif%}</li>
     <li>Создано: {{operation_product1.created_by}}</li>
     <li>Примечание: {{operation_product1.commentary}}</li>
+    {%if operation_product1.client%}{% if operation_product1.type.changes_price == False%}<li>Цена: {{operation_product1.price}}</li>{%endif%}{%endif%}
     <li>Склад: {{operation_product1.storage}}</li>
     {%if operation_product1.client%}<li>Сумма : {{operation_product1.cash}}</li>{%endif%}
     {%if operation_product1.client%}<li>Остаток : {{operation_product1.leftovers}}</li>{%endif%}

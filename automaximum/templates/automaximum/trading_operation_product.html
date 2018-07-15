@@ -2,7 +2,8 @@
 {% block content %}
 <div class="container"> 
   <div class="row">
-    <div class="dropdown col-md-4">
+    <div class=" col-xs-12">
+      <a href="{% url 'trading_operation_product_create'%}?operation_id={{type_operation_product1.pk}}" class="save btn btn-default pull-right" role="button" aria-pressed="true">Новая</a> 
       <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type_operation_product1.name}}
       <span class="caret"></span></button>
       <ul class="dropdown-menu">
@@ -11,7 +12,7 @@
       {% endfor %}
       </ul>
     </div>
-      <a href="{% url 'trading_operation_product_create'%}?operation_id={{type_operation_product1.pk}}" class="save btn btn-default pull-right" role="button" aria-pressed="true">Новая</a> 
+      
   </div>
   <br/>
   <div class="table-responsive">
