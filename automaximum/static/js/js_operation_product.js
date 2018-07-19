@@ -121,7 +121,6 @@ $(document).on('change', 'select[name=price]', function() {
     senddict.subject = 'prices_val';
     if (count > 0){
     senddict.count = count
-    console.log(senddict)
     $.ajax({
         type: "GET",
         url: "/trading/ajax",
@@ -132,6 +131,7 @@ $(document).on('change', 'select[name=price]', function() {
                 if(senddict.len != 0){
                     $.each(senddict.items, function(k, v){
                         $('#id_'+arrr[v.placing]).val(v.value);
+                        $($('#id_'+arrr[v.placing]).parent().parent().find("input")[4]).val($($('#id_'+arrr[v.placing]).parent().parent().find("input")[2]).val()*$($('#id_'+arrr[v.placing]).parent().parent().find("input")[3]).val());
                      });
                 }                    
                 }
@@ -145,3 +145,12 @@ $(document).on('change', 'select[name=price]', function() {
 });
 });
 
+$(document).on('change', '.price-gen', function(e){
+    var smth;
+    if ($(this).attr("id").slice(-5)== "price" ){
+        smth = $($(this).parent().parent().find("input")[2]).val();
+    }else{
+        smth = $($(this).parent().parent().find("input")[3]).val();
+    }
+    $($(this).parent().parent().find("input")[4]).val($(this).val()*smth);
+});

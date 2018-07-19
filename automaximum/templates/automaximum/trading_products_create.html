@@ -5,8 +5,8 @@
 <div class="container">   
 <form method="POST" class="post-form"> <h3>{% if page == 'new' %} Новая карта: {{page_name}} {%else%} Редактирование: {{product1}}{% endif %}</h3>
 
-  {% if page == 'edit' %}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
-  <br><hr>
+  {% if page == 'edit' %}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button><br>{%endif%}
+<hr>
   {% if page == 'new' %}{% csrf_token %}
   
         {{ form.as_p }}

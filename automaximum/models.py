@@ -47,10 +47,10 @@ class user_profile(models.Model):
 
 #цена
 class price(models.Model):
-    name = models.CharField(max_length=64, blank = False, unique = True)
+    name = models.CharField(max_length=64, blank = False, unique = True, verbose_name='Название')
     #наценка_фл, используется в предложении формирования цен, (nacenka*price0), по дефолту = 2(200%).
-    nacenka = models.FloatField(blank=True, default = 2.0)
-    analogue = models.ForeignKey("self", blank=True, null= True, verbose_name='цена от которой считать', on_delete=models.SET_NULL)
+    nacenka = models.FloatField(blank=True, default = 2.0, verbose_name='Наценка')
+    analogue = models.ForeignKey("self", blank=True, null= True, verbose_name='Цена от которой считать', on_delete=models.SET_NULL)
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -237,6 +237,10 @@ class product(models.Model):
     deletefree = models.BooleanField(default=True)
     #удалено
     deleted = models.BooleanField(default=False)
+    #edited
+    edited = models.BooleanField(default=False)
+    need_to_edit = models.BooleanField(default=False, verbose_name='Пометка на редактирование')
+    need_to_edit_commentary = models.CharField(max_length=256, blank = True, verbose_name='Описание для редактирования')
     #хар-ки от категории
     characteristics = models.ManyToManyField(characteristics, through='characteristics_value',
                         through_fields=('product','characteristics'),)
@@ -279,8 +283,10 @@ class product(models.Model):
                             if dsa.characteristics.type  == 'string' and dsa.text != '':
                                 f_name.append(dsa.text)
                                 print('mi tut')
-                            if dsa.characteristics.type  == 'int' and dsa.value != '':
-                                f_name.append(str(dsa.value)+dsa.characteristics.edinica)
+                            if dsa.characteristics.type  == 'int' and dsa.value:
+                                f_name.append(str(dsa.value))
+                                if dsa.characteristics.edinica:
+                                    f_name.append(dsa.characteristics.edinica)
                             if dsa.characteristics.type  == 'choice' and dsa.choice != None:
                                 f_name.append(dsa.choice.text)
             name_full = ' '.join(f_name[::1])
@@ -317,8 +323,8 @@ class part_of_car(models.Model):
 class characteristics_value(models.Model):
     characteristics = models.ForeignKey(characteristics, blank=False, null= True, on_delete=models.SET_NULL)
     product = models.ForeignKey(product, blank=False, null= True, on_delete=models.SET_NULL)
-    value = models.FloatField(max_length=128, blank = True, verbose_name=str(characteristics))
-    text = models.CharField(max_length=128, blank = True, verbose_name=str(characteristics))
+    value = models.FloatField(max_length=128, blank = True, null= True, verbose_name=str(characteristics))
+    text = models.CharField(max_length=128, blank = True, null= True, verbose_name=str(characteristics))
     choice = models.ForeignKey(characteristics_choices, blank = True, null= True, on_delete=models.SET_NULL, verbose_name=str(characteristics))
     class Meta:
         ordering = ['characteristics']
@@ -344,20 +350,21 @@ class price_value(models.Model):
     class Meta:
         ordering = ['price']
     def save(self, *args, **kwargs):
-        if self.nacenka != None and self.nacenka != 0:
-            modif = self.nacenka
-        else:
-            modif = self.price.nacenka
-        if self.price.analogue == None:
-            znach = self.product.price0
-        else:
-            iud = price_value.objects.get(price=self.price.analogue, product=self.product)
-            znach = iud.value
-        self.recomend_price = modif * znach
+        if self.id != None:
+            if self.nacenka != None:
+                modif = self.nacenka
+            else:
+                modif = self.price.nacenka
+            if not self.price.analogue:
+                znach = self.product.price0
+            else:
+                iud = price_value.objects.get(price=self.price.analogue, product=self.product)
+                znach = iud.value
+            self.recomend_price = modif * znach
         super().save()     
 
     def __str__(self):
-        return str(self.price) + ' ' + str(self.product)
+        return str(self.product) + ' ' + str(self.price)
 
 
 #вид операция_деньги
@@ -426,8 +433,11 @@ class operation_product(models.Model):
     leftovers = models.FloatField(default = 0)
     state = models.IntegerField(default = 0)
     price = models.ForeignKey('price', null= True, blank = True, on_delete=models.SET_NULL)
-    created_by = models.ForeignKey(User, blank = True, null= True, on_delete=models.SET_NULL) 
+    created_by = models.ForeignKey(User, blank = True, null= True, on_delete=models.SET_NULL)
+    car = models.ForeignKey(car, null= True, blank = True, on_delete=models.SET_NULL, verbose_name='Автомобиль') 
     approved = models.BooleanField(default=False)
+    need_to_edit = models.BooleanField(default=False, verbose_name='Пометка на редактирование')
+    need_to_edit_commentary = models.CharField(max_length=256, blank = True, verbose_name='Описание для редактирования')
     class Meta:
         ordering = ["created_date"]
     def get_prodinstance(self):

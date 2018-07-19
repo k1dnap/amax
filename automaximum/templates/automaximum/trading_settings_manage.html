@@ -2,13 +2,16 @@
 {% load staticfiles %}
 {% block content %}
 <div class="container">
-    {%if page_type == 'create'%}
-    <h3>Новая карта: {{page_name}}</h3>
-    {%endif%}
-    {%if page_type == 'edit'%}
-    <h3>Редактирование карты: {{page_name}} - {{object1.name}}</h3>
-    {%endif%}
-    <form method="POST" class="post-form">{% csrf_token %}
+    <form method="POST" class="post-form">
+            {%if page_type == 'create'%}
+            <h3>Новая карта: {{page_name}}</h3>
+            {%endif%}
+            {%if page_type == 'edit'%}
+            <h3>Редактирование карты: {{page_name}} - {{object1.name}}</h3>
+            {%endif%}
+    <button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>
+    <br><hr>
+    {% csrf_token %}
     {%if page == 'user'%}
     {{ user_form.as_p }}
     {{ profile_form.as_p }}    

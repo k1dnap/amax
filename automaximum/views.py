@@ -8,10 +8,6 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
-#https://www.youtube.com/watch?v=opsAaK_4BiM
-# https://stackoverflow.com/questions/25959164/django-filter-form-field-by-foreign-key
-# https://stackoverflow.com/questions/291945/how-do-i-filter-foreignkey-choices-in-a-django-modelform
-
 characteristics_mm = characteristics.objects.all()
 manufacturer_mm = manufacturer.objects.all()
 category_mm = category.objects.all()
@@ -30,20 +26,38 @@ operation_money_mm = operation_money.objects.all()
 operation_product_product_instance_mm = operation_product_product_instance.objects.all()
 operation_product_cashbox_instance_mm = operation_product_cashbox_instance.objects.all()
 part_of_mm = part_of.objects.all()
+#util
+#eto dlya polucheniya tovarov v podkategorii v poiske po kategorii
+def getsubcatlist(suvas):
+    return_set = set()
+    return_set.add(suvas)
+    ixz = category.objects.filter(subcategory_of=suvas)
+    for mnb in ixz:
+        lak = category.objects.filter(subcategory_of=mnb)
+        if lak.exists():
+            return_set.add(mnb)
+            for zum in lak:
+                sam = getsubcatlist(zum)
+                for mnx in sam:
+                    return_set.add(mnx)
+        else:
+            return_set.add(mnb)
+    return return_set
+#eto dlya udaleniya der'ma iz korzini
+def removeitemsfrombasket(mbf):
+    user_id1 = get_object_or_404(User, pk=mbf)
+    products_in_basket = trading_product_in_basket.objects.filter(user=user_id1).delete()
 
-def test(request):
-    products_list = product.objects.all()
-    return render(request, 'automaximum/test2.html',{
-    'products_list': products_list,
-    })
-
-
-#главная++
+#главная++ (не рефактори)
 def main(request):
-    product_amount = storage.objects.all()
     return render(request, 'automaximum/site_index.html')
-
-#login++\logout++\registration--
+#торговая_главная++(не рефактори)
+def trading(request):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('trading_operation_product')
+    else:
+        return redirect('main')
+#login++\logout++\(не рефактори)
 def sign(request):
     action = request.GET.get('action', '')
     if action == 'logout':
@@ -67,7 +81,7 @@ def sign(request):
                 })    
     return redirect('main')
 
-#ajax
+#ajax(рефактори c jsom doma)
 def trading_ajax(request):
     if request.user.is_staff or request.user.is_superuser:
         if request.GET.get('subject') == 'productf':
@@ -125,7 +139,6 @@ def trading_ajax(request):
                     return_dict["items"].append(product_dict)
             return_dict["len"] = int(len(return_dict["items"]))
             return JsonResponse(return_dict)
-
         elif request.GET.get('subject') == 'price_val':
             return_dict = dict()
             return_dict["items"] = list()
@@ -155,17 +168,7 @@ def trading_ajax(request):
                 return JsonResponse(return_dict)
     else:
         return redirect('main')
-
-
-
-#торговая_главная++
-def trading(request):
-    if request.user.is_staff or request.user.is_superuser:
-        return redirect('trading_operation_product')
-    else:
-        return redirect('main')
-        
-#trading_tovari(korzina)++ add++\clear++\delete++
+#trading_tovari(korzina)++ add++\clear++\delete++(не рефактори)
 def trading_addtobasket(request):
     if request.user.is_staff or request.user.is_superuser:    
         type = request.GET.get('type', '')
@@ -173,40 +176,25 @@ def trading_addtobasket(request):
         user_id = request.GET.get('user_id', '')
         amount = request.GET.get('amount', '')
         return_dict = dict()
-
-
         if type == 'add':
             user_id1 = get_object_or_404(User, pk=user_id)
-            product_id1 = get_object_or_404(product, pk=product_id)
-            #if request.method == 'GET':
-                #product_id = request.GET['product_id']
-                #user_id = request.GET['user_id']
-                #amount = request.GET['amount']
-                #is_delete = request.GET['is_delete']
-                #if is_delete == 'true':
-                    #trading_product_in_basket.objects.filter(user=user_id, product =  product_id).delete()
-                #else:
+            product_id1 = get_object_or_404(product, pk=product_id, deleted = False)
             new_product, created = trading_product_in_basket.objects.get_or_create(user=user_id1, product = product_id1)
             new_product.value += int(amount)
             new_product.save(force_update=True)
-        
-        
         if type == 'clear':
             user_id = request.GET.get('user_id', '')
             user_id1 = get_object_or_404(User, pk=user_id)
             if request.user == user_id1:
                 products_in_basket = trading_product_in_basket.objects.filter(user=user_id1).delete()
-        
         if type == 'delete':
             user_id1 = get_object_or_404(User, pk=user_id)
             product_id1 = get_object_or_404(product, pk=product_id)
             products_delete = trading_product_in_basket.objects.filter(user=user_id1, product = product_id1).delete()
-        
         products_in_basket = trading_product_in_basket.objects.filter(user=user_id1)
         products_in_basket_count = products_in_basket.count()
         return_dict["products_in_basket_count"] = products_in_basket_count
         return_dict["products"] = list()
-
         for item in  products_in_basket:
             product_dict = dict()
             product_dict["userid"] = user_id1.pk
@@ -218,240 +206,269 @@ def trading_addtobasket(request):
     else:
         return redirect('main')
 
-#additional
+#additional(не рефактори)
 def trading_additional(request):
     if request.user.is_superuser:
-    
         return render(request, 'automaximum/trading_additional.html',{
         'nav_bar' : 'trading_additional',
         })
-    #user ne staff ili admin
+    #user ne admin
     else:
         return redirect('main')
-
+#(не рефактори)
 def trading_additional_option(request):
     if request.user.is_superuser:
         type = request.GET.get('type', '')
-        naming = None
-        button_bar = None
-        obj_list = None
+        class page:
+            naming = None
+            button_is = None
+            button_bar = None
+            obj_list = None
+            texting = None
         #cennik
         if type == 'prices':
-            naming = 'Цены'
+            page.button_is = True
+            page.naming = 'Цены'
             if request.GET.get('object') == 'monitor_false':
-                button_bar = 'monitor_false'
-                obj_list = product.objects.filter(monitor_price=False)
+                page.texting = "Отображаются объекты у которых не отслеживается цена"
+                page.button_bar = 'monitor_false'
+                page.obj_list = product.objects.filter(monitor_price=False)
             elif request.GET.get('object') == 'monitor':
-                button_bar = 'monitor'
-                obj_list = set()
-                z = set(price_value.objects.filter(monitor_price=True))
-                for i in z:
+                page.texting = "Отображаются объекты у которых цена не равна рекомендуемой"
+                page.button_bar = 'monitor'
+                page.obj_list = set()
+                for i in price_value.objects.filter(monitor_price=True).order_by('product'):
                     if i.recomend_price != i.value:
-                        obj_list.add(i.product)
-        #zayavka
+                        page.obj_list.add(i)
         elif type == 'application':
-            naming = 'Остатки'
+            page.button_is = True
+            page.naming = 'Остатки'
             if request.GET.get('object') == 'monitor_false':
-                button_bar = 'monitor_false'
-                obj_list = product.objects.filter(monitor_amount=False)
+                page.texting = "Отображаются объекты у которых не отслеживается остаток"
+                page.button_bar = 'monitor_false'
+                page.obj_list = product.objects.filter(monitor_amount=False)
             elif request.GET.get('object') == 'monitor':
-                button_bar = 'monitor'
-                obj_list = set()
-                z = set(product.objects.filter(monitor_amount=True))
-                for i in z:
+                page.texting = "Отображаются объекты у которых итоговый остаток меньше минимального"
+                page.button_bar = 'monitor'
+                page.obj_list = set()
+                for i in product.objects.filter(monitor_amount=True):
                     if i.amount0 < i.min_amount:
-                        obj_list.add(i)
+                        i.status = "this"
+                        page.obj_list.add(i)
         elif type == 'amount_minus':
-            naming = 'Минусовой остаток'
-            obj_list = product.objects.filter(amount0__lt=0)
+            page.texting = "Отображаются объекты с минусовым остатком"
+            page.naming = 'Минусовой остаток'
+            page.obj_list = product.objects.filter(amount0__lt=0)
+        elif type == 'no_edited':
+            page.texting = "Отображаются неотредактированные объекты"
+            page.naming = 'Неотредактированные карты'
+            page.obj_list = product.objects.filter(edited=False)
+        elif type == 'need_to_edit':
+            page.texting = "Отображаются карты товара помеченные на редактирование"
+            page.naming = 'Карты товара на редактирование'
+            page.obj_list = product.objects.filter(need_to_edit=True)
+        elif type == 'need_to_edit_op':
+            page.texting = "Отображаются товарные операции помеченные на редактирование"
+            page.naming = 'Товарные операции на редактирование'
+            page.obj_list = operation_product.objects.filter(need_to_edit=True)        
         else:
             return None
         return render(request, 'automaximum/trading_additional_option.html',{
         'nav_bar' : 'trading_additional',
-        'naming': naming,
-        'button_bar': button_bar,
-        'obj_list': obj_list,
+        'page': page,
         'type' : type,
         })
     #user ne staff ili admin
     else:
         return redirect('main')
+#не рефактори)
+def trading_additional_prices(request):
+    if request.user.is_superuser:
+        qset = None
+        if request.GET.get('operation_product') != None:
+            qset= []
+            wset= set()
+            #lambda tormozit setami udobnee i bistree
+            for i in operation_product_product_instance.objects.filter( operation_product=get_object_or_404( operation_product, pk= request.GET.get('operation_product'))):
+                wset.add(i.product)
+            for w in wset:
+                ret_list = []
+                ret_list.append(w)
+                for k in price_value.objects.filter(product = w):
+                    ret_list.append(k)
+                qset.append(ret_list)
+        #dlya drugih massovikh reaktirovaniy cen, k primeru po 分类，或者原厂或我不知道
+        else:            
+            return redirect('trading')
+        if request.method == "POST":
+            for obj in qset:
+                for i in obj[1:]:
+                    print(i)
+                    t = price_value.objects.get(pk=i.pk)
+                    ###########cena
+                    if request.POST[str(i.pk)+'-value'] == '':
+                        t.value = None
+                    else:
+                        t.value = float(request.POST[str(i.pk)+'-value'])
+                    ###########nacenka
+                    if request.POST[str(i.pk)+'-nacenka'] == '':
+                        t.nacenka = None
+                    else:
+                        t.nacenka = float(request.POST[str(i.pk)+'-nacenka'])
+                    t.save(force_update=True)
+            return redirect('/trading/operation_product/view?id=%s' % request.GET.get('operation_product'))
+        return render(request, 'automaximum/trading_additional_prices.html',{
+        'nav_bar' : 'trading_additional',
+        'qset': qset,
+        })
+    #user ne staff ili admin
+    else:
+        return redirect('main')
+#не рефактори)
+def trading_additional_cars(request):
+    if request.user.is_superuser:
+        if request.GET.get('operation_product') != None:
+            qset= None
+            this_car = None
+            if operation_product.objects.get(pk=request.GET.get('operation_product')).car != None:
+                this_car = operation_product.objects.get(pk=request.GET.get('operation_product')).car
+                qset= set()
+                for i in operation_product_product_instance.objects.filter( operation_product=get_object_or_404( operation_product, pk= request.GET.get('operation_product'))):
+                    qset.add(i.product)
+        else:            
+            return redirect('trading')
+        if request.method == "POST" and this_car:
+            for i in qset:
+                p = product.objects.get(pk=i.pk)
+                if request.POST.get(str(i.pk)+'-car', False) == 'on':
+                    p.car.add(this_car)
+                    p.save(force_update=True)
+                else:
+                    print('not got')
+        return render(request, 'automaximum/trading_additional_cars.html',{
+        'nav_bar' : 'trading_additional',
+        'this_car':this_car,
+        'qset': qset,
+        })
+    #user ne staff ili admin
+    else:
+        return redirect('main')
 
-#settings++
+#settings++#не рефактори)
 def trading_settings(request):
     if request.user.is_superuser:
-    
         return render(request, 'automaximum/trading_settings.html',{
         'nav_bar' : 'trading_settings',
         })
     #user ne staff ili admin
     else:
         return redirect('main')
-#view
+#view#не рефактори)
 def trading_settings_view(request):
     if request.user.is_superuser:
         type = request.GET.get('type', '')
         object = request.GET.get('object', '')
-        #client - client++
+        print(object=='')
+        print(type)
+        page_title = None
+        obj_list = None
+        button_is = None
+        button_title = None
         if type == 'client':
-            #proverka na prava-
-            client_list = client.objects.all().order_by('name')
-
-            return render(request, 'automaximum/trading_settings_view.html',{
-            'nav_bar' : 'trading_settings',
-            'page_type': 'client_list',
-            'client_list' : client_list,
-            })
-        #cashbox_operation++ - cashbox, type_operation_money
+            object = type
+            page_title = "Управление Клиентами"
+            button_is = True
+            button_title = "Новый клиент"
+            obj_list = client.objects.all().order_by('name')
         if type == 'cashbox':
-            #proverka na prava-
+            page_title = "Управление Кассовыми операциями"
             if object == 'cashbox':
-                cashbox_list = cashbox.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'cashbox',
-                'object': 'cashbox',
-                'cashbox_list' : cashbox_list,
-                })   
+                page_title = "Кассы"
+                obj_list = cashbox.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новая касса"
             if object == 'type_operation_money':
-                type_operation_money_list = type_operation_money.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'cashbox',
-                'object': 'type_operation_money',
-                'type_operation_money_list' : type_operation_money_list,
-                })                     
-            return render(request, 'automaximum/trading_settings_view.html',{
-            'nav_bar' : 'trading_settings',
-            'page_type': 'cashbox',
-            'object': 'cashbox_operation',
-            })
-        #products++ - storage, type_operation_product, price
+                page_title = "Виды кассовых операций"
+                obj_list = type_operation_money.objects.all().order_by('name') 
+                button_is = True
+                button_title = "Новый вид кассовой операции"
         if type == 'product':
-            #proverka na prava-
+            page_title = 'Управление товарными операциями'
             if object == 'type_operation_product':
-                type_operation_product_list = type_operation_product.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product',
-                'object': 'type_operation_product',
-                'type_operation_product_list' : type_operation_product_list,
-                })         
+                page_title = "Виды товарных операций"            
+                obj_list = type_operation_product.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый вид товарной операции"
             if object == 'storage':
-                storage_list = storage.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product',
-                'object': 'storage',
-                'storage_list' : storage_list,
-                })
-
+                page_title = "Склады"            
+                obj_list = storage.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый склад"
             if object == 'price':
-                price_list = price.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product',
-                'object': 'price',
-                'price_list' : price_list,
-                })            
-            return render(request, 'automaximum/trading_settings_view.html',{
-            'nav_bar' : 'trading_settings',
-            'page_type': 'product',
-            'object': 'product_operation',
-            })
-        #user+
+                page_title = "Цены"            
+                obj_list = price.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новая цена"
         if type == 'user':
-            #proverka na prava-
+            page_title = "Управление пользователями"
             if object == 'user_profile':
-                user_profile_list = user_profile.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'user',
-                'object': 'user_profile',
-                'user_profile_list' : user_profile_list,
-                })         
+                page_title = "Пользователи"            
+                obj_list = user_profile.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый пользователь"
             if object == 'access_level':
-                access_level_list = access_level.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'user',
-                'object': 'access_level',
-                'access_level_list' : access_level_list,
-                })
-         
-            return render(request, 'automaximum/trading_settings_view.html',{
-            'nav_bar' : 'trading_settings',
-            'page_type': 'user',
-            'object': 'user',
-            })   
-        #product_list
+                page_title = "Уровни доступа"            
+                obj_list = access_level.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый уровень доступа"
         if type == 'product_list':
-            #proverka na prava-
-            #car
+            page_title = "Управление товарами"
             if object == 'car':
-                car_list = car.objects.all().order_by('full_name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'car',
-                'car_list' : car_list,
-                })
-            #engine
+                page_title = "Машины"            
+                obj_list = car.objects.all().order_by('full_name')
+                button_is = True
+                button_title = "Новая машина"
             if object == 'engine':
-                engine_list = engine.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'engine',
-                'engine_list' : engine_list,
-                })
-            #category
+                page_title = "Двигатели"            
+                obj_list = engine.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый двигатель"
             if object == 'category':
-                category_list = category.objects.all().order_by('full_name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'category',
-                'category_list' : category_list,
-                })            
-            #manufacturer
+                page_title = "Категории"            
+                obj_list = category.objects.all().order_by('full_name')
+                button_is = True
+                button_title = "Новая категория"
             if object == 'manufacturer':
-                manufacturer_list = manufacturer.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'manufacturer',
-                'manufacturer_list' : manufacturer_list,
-                })            
-            #part_of car
+                page_title = "Производители"            
+                obj_list = manufacturer.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новый производитель"
             if object == 'part_of':
-                part_of_list = part_of.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'part_of',
-                'part_of_list' : part_of_list,
-                })                            
-            #characteristics
+                page_title = "Расположения"            
+                obj_list = part_of.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новое Расположение"
             if object == 'characteristics':
-                characteristics_list = characteristics.objects.all().order_by('name')
-                return render(request, 'automaximum/trading_settings_view.html',{
-                'nav_bar' : 'trading_settings',
-                'page_type': 'product_list',
-                'object': 'characteristics',
-                'characteristics_list' : characteristics_list,
-                })            
-            return render(request, 'automaximum/trading_settings_view.html',{
-            'nav_bar' : 'trading_settings',
-            'page_type': 'product_list',
-            'object': 'product_list',
-            }) 
+                page_title = "Характеристики"            
+                obj_list = characteristics.objects.all().order_by('name')
+                button_is = True
+                button_title = "Новая характеристика"
+        return render(request, 'automaximum/trading_settings_view.html',{
+        'nav_bar' : 'trading_settings',
+        'type': type,
+        'object': object,
+        'obj_list': obj_list,
+        'button_is':button_is,
+        'page_title':page_title,
+        'button_title':button_title,
+        })
     #user ne staff ili admin    
     else:
         return redirect('main')
 #manage(create \edit) - 
 #client, cashbox, type_operation_money++, type_operation_product, storage, price, user, access_level
 #car, engine, category, manufacturer, characteristics
+     ##gospodi perepishi eto der'mo, eto 妈的笔啥都看不懂，以后要改修\gengxin的时候可以发现问题   
 def trading_settings_manage(request):
     if request.user.is_superuser:
         type = request.GET.get('type', '')
@@ -470,7 +487,7 @@ def trading_settings_manage(request):
                         client = form.save(commit=False)
                         client.creator = created_by
                         client.save()
-                        return redirect('trading_settings')
+                        return redirect('/trading/settings/manage?type=edit&object=%s&id=%s' % (object, client.pk))
                 else:
                     form = clientForm()
                     return render(request, 'automaximum/trading_settings_manage.html',{
@@ -488,8 +505,9 @@ def trading_settings_manage(request):
                     if form.is_valid():
                         client1 = form.save(commit=False)
                         client1.save()
-                        return redirect('trading_settings')
+                        return redirect('/trading/settings/view?type=%s' % object )
                 else:
+                    page_name = "Клиент"
                     form = clientForm(instance=client1)
                     return render(request, 'automaximum/trading_settings_manage.html',{
                         'nav_bar' : 'trading_settings',
@@ -498,7 +516,7 @@ def trading_settings_manage(request):
                         'object1': client1, 
                         'page' : 'client',
                         'page_type' : 'edit',
-                        'page_name' : "Клиент",
+                        'page_name' : page_name,
                     })
         #cashbox        
         if object == 'cashbox':
@@ -688,7 +706,7 @@ def trading_settings_manage(request):
                     if form.is_valid():
                         price = form.save(commit=False)
                         for product in product_mm:
-                            price_value.objects.create(price=price, product=product)                
+                            price_value.objects.create(price=price, product=product, value=0, recomend_price=0)                
                         price.save()
                         return redirect('trading_settings')
                 else:
@@ -797,7 +815,7 @@ def trading_settings_manage(request):
                     created_by = request.user
                     form = carForm(request.POST)
                     if form.is_valid():
-                        car = form.save(commit=False)
+                        car = form.save()
                         car.save()
                         return redirect('trading_settings')
                 else:
@@ -815,7 +833,7 @@ def trading_settings_manage(request):
                     created_by = request.user
                     form = carForm(request.POST, instance=car1)
                     if form.is_valid():
-                        car1 = form.save(commit=False)
+                        car1 = form.save()
                         car1.save()
                         return redirect('trading_settings')
                 else:
@@ -1088,26 +1106,7 @@ def trading_settings_manage(request):
     else:
         return redirect('main')
 
-#eto dlya polucheniya tovarov v podkategorii v poiske po kategorii
-def getsubcatlist(suvas):
-    return_set = set()
-    return_set.add(suvas)
-    ixz = category.objects.filter(subcategory_of=suvas)
-    for mnb in ixz:
-        lak = category.objects.filter(subcategory_of=mnb)
-        if lak.exists():
-            return_set.add(mnb)
-            for zum in lak:
-                sam = getsubcatlist(zum)
-                for mnx in sam:
-                    return_set.add(mnx)
-        else:
-            return_set.add(mnb)
-    return return_set
 
-def removeitemsfrombasket(mbf):
-    user_id1 = get_object_or_404(User, pk=mbf)
-    products_in_basket = trading_product_in_basket.objects.filter(user=user_id1).delete()
 #картотека обычная##############
 def trading_products_list(request):
     if request.user.is_staff or request.user.is_superuser:
@@ -1168,10 +1167,10 @@ def trading_products_list(request):
             manufact_all = manufacturer.objects.all()
             manufact_list = None
             manuf = None
-            #+ ajax
+            #by bname
             if type == "name":
                 if item is not '':
-                    items_product = product.objects.filter(full_name__icontains=item).distinct()
+                    items_product = product.objects.filter(Q(full_name__icontains=item) | Q(article_alt__icontains=item))
             #sdelai
             if type == "car":
                 if item is not '':
@@ -1368,7 +1367,6 @@ def trading_products_view(request):
     if request.user.is_staff or request.user.is_superuser:
         object = request.GET.get('object', '')
         id = request.GET.get('id', '')
-
         #product
         if object == "product":
             view_product = get_object_or_404(product, pk=id)
@@ -1426,8 +1424,6 @@ def trading_products_view(request):
             'avto': avto,
             'dvigatel': dvigatel,
             })
-        else:
-            return redirect('trading_products_list')
     else:
         return redirect('main')
 #новая карта товара
@@ -1438,27 +1434,23 @@ def trading_products_create(request):
         if create == "product":
             if request.method == "POST":
                 form = productForm(request.POST)
+                if not request.user.is_superuser:
+                    del form.fields["price0"]
                 if form.is_valid():
-                    product = form.save()
-                    memory_action.objects.create(name = 'Новая карта товара', action = 'Создание новой карты' + str(product) + ' ' , created_date = timezone.now())
-                    product.save()
-                    for storage in storage_mm:
-                        amount_on_storage.objects.create(storage=storage, product=product, amount = 0)
-                    
-                    for price in price_mm:
-                        price_value.objects.create(price=price, product=product, value = 0, monitor_price=product.monitor_price)                
-                    
-                    product_characteristics = product.category.characteristics.all()
-                    for characteristics in product_characteristics:
-                        characteristics_value.objects.create(characteristics=characteristics, product=product)
-                    for kias in product.car.all():
-                        part_of_car.objects.create(product=product, car=kias)
-                    for kiaz in product.engine.all():
-                        part_of_car.objects.create(product=product, engine=kiaz)
-
-                    #arhiv
-                    #edit
-                    return redirect('/trading/products/edit?id=%s' %product.pk)
+                    obje = form.save()
+                    memory_action.objects.create(name = 'Новая карта товара', action = 'Создание новой карты' + str(obje) + ' ' , created_date = timezone.now())
+                    obje.save()
+                    for i in storage.objects.all():
+                        amount_on_storage.objects.create(storage=i, product=obje, amount = 0)
+                    for i in price_mm:
+                        price_value.objects.create(price=i, product=obje, value = 0,recomend_price = 0, monitor_price=obje.monitor_price)
+                    for i in obje.category.characteristics.all():
+                        characteristics_value.objects.create(characteristics=i, product=obje)
+                    for i in obje.car.all():
+                        part_of_car.objects.create(product=obje, car=i)
+                    for i in obje.engine.all():
+                        part_of_car.objects.create(product=obje, engine=i)
+                    return redirect('/trading/products/edit?id=%s' %obje.pk)
             else:
                 form = productForm()
                 form.fields["category"].empty_label=None
@@ -1466,6 +1458,8 @@ def trading_products_create(request):
                 del form.fields["car"]
                 del form.fields["analogue"]
                 del form.fields["engine"]
+                if not request.user.is_superuser:
+                    del form.fields["price0"]
             return render(request, 'automaximum/trading_products_create.html', {
             'nav_bar' : 'trading_products_list',
             'form': form,
@@ -1491,7 +1485,6 @@ def trading_products_edit(request):
             if request.POST.get('deleteit', '') == 'true' and product1.deletefree == True:
                 product1.delete()
             form = productForm(request.POST, instance=product1)
-            print(request.POST.getlist('car'))
             cs1= set()
             for kvc in product1.car.all():
                 cs1.add(kvc)
@@ -1501,8 +1494,11 @@ def trading_products_edit(request):
             editformset = editformset1(request.POST, queryset=characteristics_value.objects.filter(product=product1))
             priceformset = editformset2(request.POST, queryset=price_value.objects.filter(product=product1), prefix='price')
             part_of_carformset = editformset3(request.POST, queryset=part_of_car.objects.filter(product=product1), prefix = 'partofcar')
+            if not request.user.is_superuser:
+                del form.fields["price0"]
             if form.is_valid() and editformset.is_valid() and priceformset.is_valid() and part_of_carformset.is_valid():
                 product1 = form.save()
+                #chasti avtomobilya
                 part_of_carformset.save()
                 cs2=set()
                 for zxa in product1.car.all():
@@ -1511,9 +1507,7 @@ def trading_products_edit(request):
                     #na udaleniye
                     hzcheto = cs1 - cs2
                     for ams in hzcheto:
-                        qwas = part_of_car.objects.filter(car=ams, product=product1)
-                        for ksa in qwas:
-                            ksa.delete()
+                        part_of_car.objects.filter(car=ams, product=product1).delete()
                     #na dobavleniye
                     dobavit = cs2 - cs1
                     for kmz in dobavit:                            
@@ -1525,27 +1519,35 @@ def trading_products_edit(request):
                     #na udaleniye
                     hzcheto = cs3 - cs4
                     for ams in hzcheto:
-                        qwas = part_of_car.objects.filter(engine=ams, product=product1)
-                        for ksa in qwas:
-                            ksa.delete()
+                        part_of_car.objects.filter(engine=ams, product=product1).delete()
                     #na dobavleniye
                     dobavit = cs4 - cs3
                     for kmz in dobavit:                            
                         part_of_car.objects.create(product=product1, engine=kmz)
+                #harakteristiki
                 editformset.save()
                 if product_backup_category != product1.category:
                     characteristics_value.objects.filter(product=product1).delete()
-                    product_characteristics = product1.category.characteristics.all()
-                    for characteristics in product_characteristics:
-                        characteristics_value.objects.create(characteristics=characteristics, product=product1)
-                priceformset.save()
+                    for i in product1.category.characteristics.all():
+                        if i.type=='int':
+                            characteristics_value.objects.create(characteristics=i, product=product1)
+                        elif i.type=='string':
+                            characteristics_value.objects.create(characteristics=i, product=product1)
+                        elif i.type=='choice':
+                            characteristics_value.objects.create(characteristics=i, product=product1)
+                #ceni
+                for i in priceformset:
+                    z = i.save(commit=False)
+                    if z.value == None:
+                        z.value = 0
+                    z.save()
+                product1.edited=True
                 product1.save()
                 #arhiv
                 #edit
                 return redirect('/trading/products/view?object=product&id=%s' % product1.pk)
         else:
             form = productForm(instance=product1)
-            
             form.fields["category"].empty_label=None
             editformset = editformset1(queryset=characteristics_value.objects.filter(product=product1))
             for kkl in editformset:
@@ -1587,6 +1589,9 @@ def trading_products_edit(request):
             del form.fields["car"]
             del form.fields["analogue"]
             del form.fields["engine"]
+            if not request.user.is_superuser:
+                del form.fields["price0"]
+
         return render(request, 'automaximum/trading_products_create.html', {
         'nav_bar' : 'trading_products_list',
         'form': form,
@@ -1626,7 +1631,7 @@ def trading_operation_cashbox(request):
         })
     else:
         return redirect('main')
-#создание++\редактирование++
+#создание++\редактирование++##gospodi perepishi eto der'mo, eto 妈的笔啥都看不懂，以后要改修\gengxin的时候可以发现问题
 def trading_operation_cashbox_manage(request):
     if request.user.is_staff or request.user.is_superuser:
         cashbox_id = request.GET.get('cashbox_id', '')
@@ -1876,29 +1881,25 @@ def trading_operation_cashbox_view(request):
         })
     else:
         return redirect('main')
+
+
 #товарные операции
 def trading_operation_product(request):
     if request.user.is_staff or request.user.is_superuser:
         type_operation_product_all = type_operation_product.objects.all().order_by('name')
-        sort_type = request.GET.get('sort_type', '3')
-        if sort_type:
-            type_operation_product1 = get_object_or_404(type_operation_product, pk=sort_type)
-            operation_product1 = operation_product.objects.filter(type=type_operation_product1).order_by('-created_date')
-            return render(request, 'automaximum/trading_operation_product.html', {
-            'nav_bar' : 'trading_operation_product',
-            'type_operation_product_all': type_operation_product_all,
-            'operation_product1': operation_product1,
-            'type_operation_product1': type_operation_product1,
-            'sort_type': sort_type,
-            })    
+        sort_type = request.GET.get('sort_type', '')
+        if sort_type == '':
+            type_operation_product1 = type_operation_product.objects.all()[0]
         else:
-            return render(request, 'automaximum/trading_operation_product.html', {
-            'nav_bar' : 'trading_operation_product',
-            'type_operation_product_all': type_operation_product_all,
-            #'operation_product1': operation_product1,
-            #'type_operation_product1': type_operation_product1,
-            'sort_type': 'sort_type',
-            })
+            type_operation_product1 = get_object_or_404(type_operation_product, pk=sort_type)
+        operation_product1 = operation_product.objects.filter(type=type_operation_product1).order_by('-created_date')
+        return render(request, 'automaximum/trading_operation_product.html', {
+        'nav_bar' : 'trading_operation_product',
+        'type_operation_product_all': type_operation_product_all,
+        'operation_product1': operation_product1,
+        'type_operation_product1': type_operation_product1,
+        'sort_type': sort_type,
+        })
     else:
         return redirect('main')
 #просмотр товарной операции
@@ -1915,7 +1916,7 @@ def trading_operation_product_view(request):
             return redirect('trading_operation_products')
     else:
         return redirect('main')
-##создание товарной операции
+##gospodi perepishi eto der'mo, eto 妈的笔啥都看不懂，以后要改修\gengxin的时候可以发现问题
 def trading_operation_product_create(request):
     if request.user.is_staff or request.user.is_superuser:
         init = request.GET.get('init', '')
@@ -1942,6 +1943,13 @@ def trading_operation_product_create(request):
             spisaniye = None
             if request.POST.get('approved', '') == 'true':
                 spisaniye = "smth"
+            if request.user.is_superuser:
+                None
+            else:
+                for arms in editformset:
+                    if operation_product1.type != "minusplus" and operation_product1.changes_price == False:
+                        del arms.fields["product_price"]
+                del form.fields["car"]
             if form.is_valid() and editformset.is_valid() and editformset_cashbox.is_valid():
                 print('poehali')
                 operation_product = form.save()
@@ -1951,22 +1959,25 @@ def trading_operation_product_create(request):
                     operation_product.approved = True
                 operation_product.cash = 0                
                 for z in editformset:
-                    #if not z.empty_permitted:
+                    #我不懂这个是咋做的，要更新跳过
                         operation_product_product_instancez = z.save()
                         if operation_product_product_instancez.product is not None:
+                            if operation_product.type != "minusplus" and operation_product1.changes_price == False and not request.user.is_superuser:
+                                operation_product_product_instancez.product_price = price_value.objects.get(price=operation_product.price, product = operation_product_product_instancez.product).value
                             operation_product_product_instancez.product.deletefree = False
-                            if operation_product.type.type != 'minusplus' and operation_product_product_instancez.product_amount != '' and operation_product_product_instancez.product_price != '':
+                            if operation_product.type.type != 'minusplus' and operation_product_product_instancez.product_amount and operation_product_product_instancez.product_price:
                                 operation_product.cash = (operation_product.cash + (operation_product_product_instancez.product_price * operation_product_product_instancez.product_amount))
                             operation_product_product_instancez.operation_product = operation_product
                             if operation_product.type.type == 'plus':
                                 if operation_product.approved == True:
                                     operation_product_product_instancez.product.amount0 = (operation_product_product_instancez.product.amount0 + operation_product_product_instancez.product_amount)
-                                    if operation_product.type.changes_price == True:
+                                    if operation_product.type.changes_price == True and operation_product_product_instancez.product_price:
                                         operation_product_product_instancez.product.price0 = operation_product_product_instancez.product_price
                                     product_amount = amount_on_storage.objects.get(product = operation_product_product_instancez.product, storage = operation_product.storage)
                                     product_amount.amount = (product_amount.amount + operation_product_product_instancez.product_amount)
                                     operation_product_product_instancez.product.save()
-                                    if operation_product.type.changes_price == True:
+                                    #这个是为更新推荐价格的那个部分
+                                    if operation_product.type.changes_price == True:                                        
                                         for ias in price_value.objects.filter(product=operation_product_product_instancez.product):
                                             ias.save()
                             if operation_product.type.type == 'minus':
@@ -2010,37 +2021,44 @@ def trading_operation_product_create(request):
             else:
                 print('sa')
         else:
-            if init == 'val':
-                editformset = editformset1(queryset=kiss)
-            else:
-                editformset = editformset1(queryset=operation_product_product_instance.objects.none())
+            #obrabativaem formu
             form = operation_productForm()
             form.fields["price"].empty_label=None
             form.fields["created_by"].empty_label=None
             form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
+            form.fields["created_by"].initial=request.user
+            form.fields["storage"].empty_label=None
+            #defoltniye znacheniya
             if operation_product1.default_price != None:
                 form['price'].initial = operation_product1.default_price
             if operation_product1.default_client != None:
                 form['client'].initial = operation_product1.default_client
-            form.fields["created_by"].initial=request.user
-            form.fields["storage"].empty_label=None
+            #tip operacii
+            var_for_form = None
             if operation_product1.type == "minusplus":
                 del form.fields["price"]
                 del form.fields["client"]
                 form.fields["storage_recieve"].empty_label=None
+                var_for_form = 'smth'
             else:
                 del form.fields["storage_recieve"]
                 form.fields["client"].empty_label=None
-            if operation_product1.type == "minusplus":
-                for zbv in editformset:
-                    del zbv.fields["product_price"]
+            if operation_product1.changes_price == True:
+                del form.fields["price"]
+            #obrabativaem editformset
+            if init == 'val':
+                editformset = editformset1(queryset=kiss)
+            else:
+                editformset = editformset1(queryset=operation_product_product_instance.objects.none())
             for arms in editformset:
+                if operation_product1.type == "minusplus":
+                    del arms.fields["product_price"]
                 if arms.instance.product != None:
                     zae = kiss.get(product=arms.instance.product)
                     arms['product_amount'].initial = float(zae.value)
                 fields = list(arms)
                 arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
-                fields= None
+            #obrabativaem editformsetcashbox
             editformset_cashbox = editformset2(queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for vcv in editformset_cashbox:
                 vcv.fields["cashbox"].label = ''
@@ -2051,8 +2069,14 @@ def trading_operation_product_create(request):
                 fields = list(vcv)
                 vcv.part1, vcv.part2 = fields[0], fields[1]
                 fields= None
-            if operation_product1.changes_price == True:
-                del form.fields["price"]
+            #要看谁来干
+            if request.user.is_superuser:
+                None
+            else:
+                for arms in editformset:
+                    if operation_product1.type != "minusplus" and operation_product1.changes_price == False:
+                        arms.fields["product_price"].widget.attrs.update({'readonly': ''})
+                del form.fields["car"]
             return render(request, 'automaximum/trading_operation_product_create.html', {
             'nav_bar' : 'trading_operation_product',
             'editformset': editformset,
@@ -2060,6 +2084,7 @@ def trading_operation_product_create(request):
             'form': form,
             'operation_product1': operation_product1,
             'page' : 'new',
+            'var_for_form': var_for_form,
             })
     else:
         return redirect('main')
@@ -2101,6 +2126,12 @@ def trading_operation_product_edit(request):
             delme = None
             if request.POST.get('deleteit', '') == 'true':
                 delme = "smth"
+            if request.user.is_superuser:
+                None
+            else:
+                for arms in editformset:
+                    if operation_product1.type.type != "minusplus" and operation_product1.type.changes_price == False:
+                        del arms.fields["product_price"]
             if form.is_valid() and editformset.is_valid() and editformset_cashbox.is_valid() and editformset_payment_edit.is_valid():
                 print('####################form vali')
                 operation_product1 = form.save()
@@ -2108,7 +2139,6 @@ def trading_operation_product_edit(request):
                 if operation_product1_backup.approved == True:
                     for items in operation_product1_instance_backup:
                         product_restore = amount_on_storage.objects.get(product = items.product, storage = operation_product1_backup.storage)
-                        print(product_restore)
                         if operation_product1_backup.type.type == 'plus':
                             product_restore.amount = (product_restore.amount - items.product_amount)
                             items.product.amount0 = (items.product.amount0 - items.product_amount)
@@ -2125,7 +2155,7 @@ def trading_operation_product_edit(request):
                         product_restore.save()
                         if delme == "smth":
                             items.delete()
-                if spisaniye != None:
+                if spisaniye:
                     operation_product1.approved = True
                 for form in editformset:
                     if delme == "smth":
@@ -2134,14 +2164,16 @@ def trading_operation_product_edit(request):
                         operation_product_product_instancez = form.save(commit=False)
                         if operation_product_product_instancez.product is not None:
                             operation_product_product_instancez.product.deletefree = False
+                            if operation_product1.type.type != "minusplus" and operation_product1.type.changes_price == False and not request.user.is_superuser:
+                                operation_product_product_instancez.product_price = price_value.objects.get(price=operation_product1.price, product = operation_product_product_instancez.product).value
                             operation_product_product_instancez_product = product.objects.get(pk = operation_product_product_instancez.product.pk)
                             operation_product_product_instancez.product.amount0 = operation_product_product_instancez_product.amount0
-                            if operation_product1.type.type != 'minusplus' and operation_product_product_instancez.product_amount != '' and operation_product_product_instancez.product_price != '':
+                            if operation_product1.type.type != 'minusplus' and operation_product_product_instancez.product_amount and operation_product_product_instancez.product_price:
                                 operation_product1.cash = (operation_product1.cash + (operation_product_product_instancez.product_price * operation_product_product_instancez.product_amount))
                             operation_product_product_instancez.operation_product = operation_product1
                             if operation_product1.type.type == 'plus':
                                 if operation_product1.approved == True:
-                                    if operation_product1.type.changes_price == True:
+                                    if operation_product1.type.changes_price == True and operation_product_product_instancez.product_price:
                                         operation_product_product_instancez.product.price0 = operation_product_product_instancez.product_price
                                     product_amount = amount_on_storage.objects.get(product = operation_product_product_instancez.product, storage = operation_product1.storage)
                                     product_amount.amount = (product_amount.amount + operation_product_product_instancez.product_amount)
@@ -2182,13 +2214,13 @@ def trading_operation_product_edit(request):
                     if delme is None:
                     #if not hgf.empty_permitted:
                         operation_product_cashbox_instancez = hgf.save(commit=False)
-                        if operation_product_cashbox_instancez.cashbox is not None and operation_product_cashbox_instancez.cash != 0:
+                        if operation_product_cashbox_instancez.cashbox and operation_product_cashbox_instancez.cash != 0:
                             operation_money_create = operation_money.objects.create(type = operation_product1.type.creates, cash = operation_product_cashbox_instancez.cash, cashbox = operation_product_cashbox_instancez.cashbox, client = operation_product1.client, leftovers = "0")
                             operation_money_create_cashbox = operation_money_create.cashbox
                             if operation_money_create.type.type == 'plus':
                                 operation_money_create_cashbox.cash = (operation_money_create_cashbox.cash + operation_money_create.cash)
                             if operation_money_create.type.type == 'minus':
-                                operation_money_create_cashbox.cash = (operation_money_create_cashbox.cash + operation_money_create.cash)
+                                operation_money_create_cashbox.cash = (operation_money_create_cashbox.cash - operation_money_create.cash)
                             operation_money_create_cashbox.save()
                             operation_product_cashbox_instancez.operation_money = operation_money_create
                             operation_product_cashbox_instancez.operation_product = operation_product1
@@ -2221,7 +2253,9 @@ def trading_operation_product_edit(request):
             form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
             form.fields["storage"].empty_label=None
             form.fields["price"].empty_label=None
+            var_for_form = None
             if operation_product1.type.type == "minusplus":
+                var_for_form = 'smth'
                 del form.fields["price"]
                 del form.fields["client"]
                 form.fields["storage_recieve"].empty_label=None
@@ -2260,6 +2294,14 @@ def trading_operation_product_edit(request):
                 fields= None
             if operation_product1.type.changes_price == True:
                 del form.fields["price"]
+            #要看谁来干
+            if request.user.is_superuser:
+                None
+            else:
+                for arms in editformset:
+                    if operation_product1.type.type != "minusplus" and operation_product1.type.changes_price == False:
+                        arms.fields["product_price"].widget.attrs.update({'readonly': ''})
+                del form.fields["car"]
             return render(request, 'automaximum/trading_operation_product_create.html', {
             'nav_bar' : 'trading_operation_product',
             'editformset': editformset,
@@ -2268,6 +2310,7 @@ def trading_operation_product_edit(request):
             'form': form,
             'operation_product1': operation_product1,
             'page' : 'edit',
+            'var_for_form':var_for_form,
             })
     else:
         return redirect('main')

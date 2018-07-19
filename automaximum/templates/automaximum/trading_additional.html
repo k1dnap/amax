@@ -5,6 +5,11 @@
     <h3>Прочее</h3>
 <li><a href="{% url 'trading_additional_option' %}?type=prices">Цены</a></li> 
 <li><a href="{% url 'trading_additional_option' %}?type=application">Остатки</a></li>
+<li><a href="#">Заказы</a></li>
+<li><a href="#">Измененные цены</a></li>
+<li><a href="{% url 'trading_additional_option' %}?type=need_to_edit_op">Товарные операции на редактирование</a></li>
+<li><a href="{% url 'trading_additional_option' %}?type=need_to_edit">Карты товара на редактирование</a></li>
+<li><a href="{% url 'trading_additional_option' %}?type=no_edited">Неотредактированные карты товара</a></li>
 <li><a href="{% url 'trading_additional_option' %}?type=amount_minus">Минусовой остаток</a></li>
 </div>
 {% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+    <form method="POST" class="post-form">
+        <h3>Редактирование цен</h3>
+        {% csrf_token %}
+        {%for ret in qset%}
+        {%for asd in ret|slice:"1"%}
+        <a href="{% url 'trading_products_view' %}?object=product&id={{asd.pk}}">
+        <h4>{{asd}}:</a></h4>
+        <p>Закупочная цена:{{asd.price0}}</p>
+        {%endfor%}
+        {%for obj in ret|slice:"1:"%}
+        <h5><strong>{{obj.price}}:</strong></h5>
+        <div class="row" style="padding-left: 15px;padding-right: 15px;">
+                <div class="col-xs-9" style="padding-left: 0px;padding-right: 0px;"><input type="number" name="{{obj.pk}}-value" {%if obj.value%}value="{{obj.value|stringformat:"s"}}"{%endif%} step="any" class="form-control" placeholder="Цена"></div>
+                <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;"><input type="number" name="{{obj.pk}}-nacenka" {%if obj.nacenka%}value="{{obj.nacenka|stringformat:"s"}}"{%endif%} step="any" placeholder="Наценка(множитель)" class="form-control"></div>
+                </div>
+        <p>Рекомендуемая: {{obj.recomend_price}}</p>
+        {%endfor%}
+        {%endfor%}
+        <br><hr><button type="submit" class="save btn btn-default pull-right">Сохранить</button> 
+    </form>
+</div>
+{% endblock %}

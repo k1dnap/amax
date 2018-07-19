@@ -19,8 +19,8 @@ class operation_product_product_instanceForm(forms.ModelForm):
         fields = ('product', 'product_amount', 'product_price',)
         widgets = {
             'product': forms.HiddenInput(attrs={'class': 'form-control','placeholder':'Продукция'}),
-            'product_amount': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Кол-во'}),
-            'product_price': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Цена'})
+            'product_amount': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Кол-во'}),
+            'product_price': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Цена'})
         }
 
 class access_levelForm(forms.ModelForm):
@@ -66,7 +66,7 @@ class type_operation_productForm(forms.ModelForm):
     
     class Meta:
         model = type_operation_product
-        fields = ('type', 'name', 'default_price', 'default_client', 'creates','changes_price', )
+        fields = ('type', 'name', 'default_price', 'default_client', 'creates','changes_price' )
         widgets = {
             'type': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
@@ -101,7 +101,7 @@ class operation_productForm(forms.ModelForm):
 
     class Meta:
         model = operation_product
-        fields = ('created_date', 'client', 'storage_recieve', 'created_by', 'commentary', 'storage', 'price', )
+        fields = ('created_date', 'client', 'storage_recieve', 'created_by', 'commentary', 'storage', 'price', 'car','need_to_edit', 'need_to_edit_commentary')
         widgets = {
             'created_date': forms.DateTimeInput(attrs={'class': 'form-control','placeholder':'Дата'}),
             'client': forms.Select(attrs={'class': 'form-control','placeholder':'Клиент'}),
@@ -110,6 +110,8 @@ class operation_productForm(forms.ModelForm):
             'commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Примечание'}),
             'storage': forms.Select(attrs={'class': 'form-control','placeholder':'Склад'}),
             'price': forms.Select(attrs={'class': 'form-control','placeholder':'Цена'}),
+            'car': forms.Select(attrs={'class': 'form-control'}),
+            'need_to_edit_commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Описание для редактирования'}),
         }
         labels = {
             'created_date': ('Дата'),
@@ -129,7 +131,7 @@ class carForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название'}),
             'subcategory_of': forms.Select(attrs={'class': 'form-control'}),
-            'engine': forms.Select(attrs={'class': 'form-control'}),
+            'engine': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'full_num': forms.TextInput(attrs={'class': 'form-control','placeholder':'Полный номер кузова'}),
             'date1': forms.DateInput(attrs={'class': 'form-control','placeholder':'Дата начала выпуска'}),
             'date2': forms.DateInput(attrs={'class': 'form-control','placeholder':'Дата окончания выпуска'}),
@@ -200,7 +202,7 @@ class productForm(forms.ModelForm):
 
     class Meta:
         model = product
-        fields = ('argus_name', 'argus_article', 'article', 'article_alt', 'category', 'manufacturer', 'commentary', 'monitor_amount', 'min_amount', 'monitor_price', 'analogue', 'car', 'engine')
+        fields = ('argus_name', 'argus_article', 'article', 'article_alt', 'category', 'manufacturer', 'commentary','need_to_edit', 'need_to_edit_commentary', 'monitor_amount', 'min_amount', 'monitor_price','price0', 'analogue', 'car', 'engine')
         widgets = {
             'argus_name': forms.TextInput(attrs={'class': 'form-control','placeholder':'Название по аргусу'}),
             'argus_article': forms.TextInput(attrs={'class': 'form-control','placeholder':'Код по аргусу'}),
@@ -210,6 +212,8 @@ class productForm(forms.ModelForm):
             'min_amount': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Минимальный остаток'}),
             'manufacturer': forms.Select(attrs={'class': 'form-control'}),
             'commentary': forms.Textarea(attrs={'class': 'form-control','rows':"3",'placeholder':'Текст для описания'}),
+            'price0': forms.NumberInput(attrs={'class': 'form-control','placeholder':'Закупочная цена'}),
+            'need_to_edit_commentary': forms.TextInput(attrs={'class': 'form-control','placeholder':'Описание для редактирования'}),
 }
 #price_value
 class price_valueForm(forms.ModelForm):

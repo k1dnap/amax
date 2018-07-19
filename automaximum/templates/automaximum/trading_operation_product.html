@@ -1,6 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
 <div class="container"> 
+    <h3>Товарные операции</h3>
   <div class="row">
     <div class=" col-xs-12">
       <a href="{% url 'trading_operation_product_create'%}?operation_id={{type_operation_product1.pk}}" class="save btn btn-default pull-right" role="button" aria-pressed="true">Новая</a> 

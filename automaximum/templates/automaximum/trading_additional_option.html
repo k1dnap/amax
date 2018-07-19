@@ -2,47 +2,37 @@
 {% block content %}
 <!-- Begin page content -->
 <div class="container">
-<h3>{{naming}}</h3>
-{%if type == 'prices'%}
+<h3>{{page.naming}}</h3>
+{%if page.button_is == True%}
 <div class="btn-group">
-        <a href="{% url 'trading_additional_option' %}?type=prices&object=monitor" class="save btn btn-default{% if button_bar == 'monitor' %} active{% endif %}" role="button" aria-pressed="true">Отслеживаемые</a> 
-        <a href="{% url 'trading_additional_option' %}?type=prices&object=monitor_false" class="save btn btn-default{% if button_bar == 'monitor_false' %} active{% endif %}" role="button" aria-pressed="true">Неотслеживаемые</a> 
+        <a href="{% url 'trading_additional_option' %}?type={{type}}&object=monitor" class="save btn btn-default{% if button_bar == 'monitor' %} active{% endif %}" role="button" aria-pressed="true">Отслеживаемые</a> 
+        <a href="{% url 'trading_additional_option' %}?type={{type}}&object=monitor_false" class="save btn btn-default{% if button_bar == 'monitor_false' %} active{% endif %}" role="button" aria-pressed="true">Неотслеживаемые</a> 
     </div>  
-
-
-    {% if button_bar == 'monitor' %}
-    <p>Отображаются объекты у которых цена не равна рекомендуемой</p>
-<form method="GET" class="form-inline">
-        <div class="form-group">
-            <input type="hidden" name="type" value="prices">
-            <input type="hidden" name="object" value="monitor">
-            <input type="text" name="search_product" placeholder="Двигатель" id="search_product" class="form-control" value = '{%if type == "engine"%}{{request.GET.search_product}}{%endif%}'>
-            <button type="submit" class="btn btn-default my-1">Поиск</button>
-        </div>
-        <p>a nuzhen li tut poisk?</p>
-</form>
-    {% endif %}
-    {% if button_bar == 'monitor_false' %}
-<p>Отображаются объекты у которых не отслеживается цена</p>
-{% endif %}
 {%endif%}
-{%if type == 'application'%}
-<div class="btn-group">
-        <a href="{% url 'trading_additional_option' %}?type=application&object=monitor" class="save btn btn-default{% if button_bar == 'monitor' %} active{% endif %}" role="button" aria-pressed="true">Отслеживаемые</a> 
-        <a href="{% url 'trading_additional_option' %}?type=application&object=monitor_false" class="save btn btn-default{% if button_bar == 'monitor_false' %} active{% endif %}" role="button" aria-pressed="true">Неотслеживаемые</a> 
-    </div> 
-    {% if button_bar == 'monitor' %}
-    <p>Отображаются объекты у которых итоговый остаток меньше минимального</p>
-    {% endif %}
-    {% if button_bar == 'monitor_false' %}
-    <p>Отображаются объекты у которых не отслеживается остаток</p>
-    {% endif %}
+{%if page.texting%}
+    <p>{{page.texting}}</p>
 {%endif%}
-{%if type == 'amount_minus'%}
-<p>Отображаются объекты с минусовым остатком</p>
+{%if page.obj_list%}
+{%for z in page.obj_list%}
+<p><a class = "add_to_basket" href="" data-product-id="{%if z.product %}{{z.product.pk}}{%else%}{{z.pk}}{%endif%}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_edit' %}?id={%if z.product %}{{z.product.pk}}{%else%}{{z.pk}}{%endif%}">
+{%if z.product %}
+{{z.product}}
+{%else%}
+{{z.full_name}}
+{%endif%}</a>
+{%if z.product %}
+<br><strong>{{z.price}}</strong>
+<br>Рекомендуемая: {{z.recomend_price}}
+<br>По факту: {{z.value}} 
 {%endif%}
-{%for z in obj_list%}
-<p><a class = "add_to_basket" href="" data-product-id="{{z.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_edit' %}?id={{z.pk}}">{{z.full_name}}</a></p>
+{%if z.status %}
+<br>Минимальный остаток: {{z.min_amount}} 
+<br>По факту: {{z.amount0}}
+{%endif%}
+{%if type == 'need_to_edit'%}
+: {{z.need_to_edit_commentary}}
+{%endif%}</p>
 {%endfor%}
+{%endif%}
 </div>
 {% endblock %}

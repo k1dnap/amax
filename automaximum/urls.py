@@ -28,10 +28,12 @@ urlpatterns = [
     #additional
     url(r'^trading/additional$', views.trading_additional, name = 'trading_additional'),
     url(r'^trading/additional/option$', views.trading_additional_option, name = 'trading_additional_option'),
+    #more
+    url(r'^trading/additional/set_prices$', views.trading_additional_prices, name = 'trading_additional_prices'),
+    url(r'^trading/additional/set_cars$', views.trading_additional_cars, name = 'trading_additional_cars'),
     #test
     url(r'^trading/ajax$', views.trading_ajax, name='trading_ajax'),    
     url(r'^trading/basket$', views.trading_addtobasket, name='trading_addtobasket'),
-    url(r'^test/$', views.test, name = 'test'),
 
 ]
 

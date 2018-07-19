@@ -2,11 +2,10 @@
 {% block content %}
 <div class="container">
     <div class="btn-group pull-right">
-            <a href="{% url 'trading_operation_product_edit'%}?operation_id={{operation_product1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a> 
-        </div>  
+            <a href="{% url 'trading_operation_product_edit'%}?operation_id={{operation_product1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a>
+          </div>  
     <h3>{{operation_product1}}</h3>
-    <hr>
-    кнопка админа на редактирование
+    <hr> 
     <li>Дата: {{operation_product1.created_date}}</li>
     <li>{%if operation_product1.client%}Клиент: {{operation_product1.client}}{%else%}Склад получатель: {{operation_product1.storage_recieve}}{%endif%}</li>
     <li>Создано: {{operation_product1.created_by}}</li>
@@ -21,6 +20,7 @@
             {%if operation_product1.client%}
             <li><a data-toggle="tab" href="#menu1">Платежи</a></li>
             {%endif%}
+            <li><a data-toggle="tab" href="#menu2">Прочее</a></li>
           </ul>
         
           <div class="tab-content">
@@ -38,6 +38,11 @@
               {%endfor%}
             </div>
             {%endif%}
+            <div id="menu2" class="tab-pane fade">
+                <h3>Прочее</h3>
+                  <li><a href="{% url 'trading_additional_prices' %}?operation_product={{operation_product1.pk}}">Редактировать цены</a></li>
+                  <li><a href="{% url 'trading_additional_cars' %}?operation_product={{operation_product1.pk}}">Назначенить автомобиль</a></li>
+              </div>
           </div>
 
 

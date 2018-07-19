@@ -1,0 +1,19 @@
+{% extends 'automaximum/trading_base.html' %}
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+        <form method="POST" class="post-form">
+<h3>Назначение автомобиля</h3>
+{%if this_car%}
+{% csrf_token %}
+<h4>{{this_car}}:</h4>
+{%for obj in qset%}
+<p><input type="checkbox" name="{{obj.pk}}-car"> <a href="{% url 'trading_products_view' %}?object=product&id={{obj.pk}}">{{obj}}</a> </p>
+{%endfor%}
+<br><hr><button type="submit" class="save btn btn-default pull-right">Сохранить</button> 
+{%else%}
+<p>Не назначен автомобиль в товарной операции</p>
+{%endif%}
+</form><a href="{% url 'trading_products_view' %}?object=product&id={{asd.pk}}"></a>
+</div>
+{% endblock %}
