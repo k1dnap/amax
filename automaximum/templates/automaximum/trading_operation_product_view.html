@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
-    <div class="btn-group pull-right">
+<div class="container-fluid">
+    <div class="btn-group pull-right" style="margin-top: 20px;">
             <a href="{% url 'trading_operation_product_edit'%}?operation_id={{operation_product1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a>
           </div>  
     <h3>{{operation_product1}}</h3>

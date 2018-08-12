@@ -298,6 +298,8 @@ def trading_additional_prices(request):
                     ret_list.append(k)
                 qset.append(ret_list)
         #dlya drugih massovikh reaktirovaniy cen, k primeru po 分类，或者原厂或我不知道
+        elif 'uslovie' == '':
+            None
         else:            
             return redirect('trading')
         if request.method == "POST":

@@ -1,14 +1,15 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
 <!-- Begin page content -->
-<div class="container"><div class="btn-group pull-right">
-    <a href="{% url 'trading_settings_create' %}?object=client" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
-</div> 
-<h4><strong>Управление Клиентами</strong> </h4>
+<div class="container-fluid">
+	<div class="btn-group pull-right">
+	    <a href="{% url 'trading_settings_create' %}?object=client" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
+	</div> 
+	<h4><strong>Управление Клиентами</strong> </h4>
 
-{%for client in client_list%}
-<p><a href="{% url 'trading_settings_edit'%}?object=client&id={{client.pk}}">{{client.name}}</a></p>
-{%endfor%}
+	{%for client in client_list%}
+	<p><a href="{% url 'trading_settings_edit'%}?object=client&id={{client.pk}}">{{client.name}}</a></p>
+	{%endfor%}
 </div>
   
   

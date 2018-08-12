@@ -31,6 +31,8 @@ users = User.objects.all().select_related('profile') выбирает
  + operation_money.type + 'на сумму ' + operation_money.cash + 'в кассе ' cashbox1
 
 
+
+style="padding-right: 0px;padding-left: 2px;"
             
 
 http://bootstrap-3.ru/bootstraptheme.php obrazci

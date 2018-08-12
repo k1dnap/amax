@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
-        <div class="btn-group pull-right">
+<div class="container-fluid">
+        <div class="btn-group pull-right" style="margin-top: 20px;">
                 <a href="{% url 'trading_operation_cashbox_manage'%}?cashbox_id={{operation_money1.cashbox.pk}}&type=edit&object={{operation_money1.type.type}}&operation_id={{operation_money1.pk}}" class="save btn btn-default"  role="button" aria-pressed="true">Редактировать</a> 
             </div>  
         <h3>{{operation_money1}}</h3>

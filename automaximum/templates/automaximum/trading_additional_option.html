@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
 <!-- Begin page content -->
-<div class="container">
+<div class="container-fluid">
 <h3>{{page.naming}}</h3>
 {%if page.button_is == True%}
 <div class="btn-group">
@@ -14,7 +14,11 @@
 {%endif%}
 {%if page.obj_list%}
 {%for z in page.obj_list%}
+{% if type != 'need_to_edit_op'%}
 <p><a class = "add_to_basket" href="" data-product-id="{%if z.product %}{{z.product.pk}}{%else%}{{z.pk}}{%endif%}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_edit' %}?id={%if z.product %}{{z.product.pk}}{%else%}{{z.pk}}{%endif%}">
+{%else%}
+<p><a href="{% url 'trading_operation_product_edit' %}?operation_id={{z.pk}}">{{z.type}}</a>
+    {%endif%}
 {%if z.product %}
 {{z.product}}
 {%else%}
@@ -29,7 +33,7 @@
 <br>Минимальный остаток: {{z.min_amount}} 
 <br>По факту: {{z.amount0}}
 {%endif%}
-{%if type == 'need_to_edit'%}
+{%if type == 'need_to_edit' or type == 'need_to_edit_op'%}
 : {{z.need_to_edit_commentary}}
 {%endif%}</p>
 {%endfor%}

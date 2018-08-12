@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% load staticfiles %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
 <form method="POST" class="post-form">
     {% if page == 'edit' %}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{% endif %}
     <h3>{% if page == 'new' %} Новая торговая операция: {{operation_product1.name}} {%else%} Редактирование: {{operation_product1.type.name}}{% endif %}</h3>
@@ -9,14 +9,6 @@
     {% csrf_token %}
     {{ form.as_p }}
   
-
-    {% if page == 'edit' %}
-    
-    <br/>
-    <p >Сумма : {{operation_product1.cash}}    </p>
-    <p >Остаток : {{operation_product1.leftovers}}</p>
-    {% endif %}
-    {{operation_product1.type}}
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#menu0">Товары</a></li>
         <li><a data-toggle="tab" href="#menu1">Платежи</a></li>
@@ -33,9 +25,9 @@
         <div class="row" style="padding-left: 15px;padding-right: 15px;">
           <a class = "delline">[-]</a>
           <br/>
-            <div class="{%if not var_for_form %}col-xs-4{%else%}col-xs-9{%endif%}" style="padding-left: 0px;padding-right: 0px;">
+            <div class="{%if not var_for_form %}col-xs-7{%else%}col-xs-9{%endif%}" style="padding-left: 0px;padding-right: 0px;">
                 <asdasd class="dropdown">
-                <input type="text" class="form-control dropdown-toggle operation_product_list" data-toggle="dropdown" name="srchbox" {% if operation_product_product_instanceForm.instance.product%}value="{{operation_product_product_instanceForm.instance.product }}"{%endif%} autocomplete="off" placeholder="Наименование">
+                <input type="text" class="form-control dropdown-toggle operation_product_list" data-toggle="dropdown" name="srchbox" {% if operation_product_product_instanceForm.instance.product%}value="{{operation_product_product_instanceForm.instance.product }}"{%endif%} autocomplete="off" placeholder="Наименование" style="padding-right: 0px;padding-left: 2px;">
                 
                     <ul class="dropdown-menu" style="
                     margin-top: 0px;
@@ -45,14 +37,14 @@
               </asdasd>
                 {{ operation_product_product_instanceForm.part0 }}
             </div>
-            <div class="{%if not var_for_form %}col-xs-2{%else%}col-xs-3{%endif%}" style="padding-left: 0px;padding-right: 0px;">
+            <div class="{%if not var_for_form %}col-xs-1{%else%}col-xs-3{%endif%}" style="padding-left: 0px;padding-right: 0px;">
               {{ operation_product_product_instanceForm.part1 }}
             </div>
             {%if not var_for_form %}
-            <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">
+            <div class="col-xs-2" style="padding-left: 0px;padding-right: 0px;">
               {{ operation_product_product_instanceForm.part2 }}
             </div>
-            <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">
+            <div class="col-xs-2" style="padding-left: 0px;padding-right: 0px;">
                 <input type="text" class="form-control" name="total" {% if operation_product_product_instanceForm.ttlprc%}value="{{ operation_product_product_instanceForm.ttlprc }}"{%endif%} placeholder="Итого" readonly>
             </div>
             {%endif%}
@@ -70,7 +62,7 @@
           {{ editformset_payment_edit.management_form }}
           {% for operation_product_cashbox_instanceForm in editformset_payment_edit %}
           <div class="row" style="padding-left: 15px;padding-right: 15px;">
-              <div class="col-xs-9" style="padding-left: 0px;padding-right: 0px;"><a class="btn btn-default btn-block" target="_blank" rel="noopener noreferrer" href="{% url 'trading_operation_cashbox_view' %}?id={{operation_product_cashbox_instanceForm.instance.operation_money.pk}}" role="button" style="text-align: left;">{{operation_product_cashbox_instanceForm.instance.operation_money}}</a></div>
+              <div class="col-xs-9" style="padding-left: 0px;padding-right: 0px;"><a class="btn btn-default btn-block" target="_blank" rel="noopener noreferrer" href="{% url 'trading_operation_cashbox_view' %}?id={{operation_product_cashbox_instanceForm.instance.operation_money.pk}}" role="button" style="text-align: left;padding-left: 12px;">{{operation_product_cashbox_instanceForm.instance.operation_money}}</a></div>
               <div class="col-xs-3" style="padding-left: 0px;padding-right: 0px;">{{ operation_product_cashbox_instanceForm }}</div>
         </div>
         <br>
@@ -92,6 +84,15 @@
         </div>
       </div>
       <hr>
+    {% if page == 'edit' and operation_product1.client %}
+    <br/>
+    <div class="row" style="padding-right: 15px;">
+      <p class="pull-right">Сумма : {{operation_product1.cash}}</p>
+    </div>
+    <div class="row" style="padding-right: 15px;">
+      <p class="pull-right">Остаток : {{operation_product1.leftovers}}</p>
+    </div>
+    {% endif %}
       <button type="submit" name="approved" value="true" class="save btn btn-default pull-right">Сохранить и провести</button>
       <button type="submit" class="save btn btn-default pull-right">Сохранить</button>
       

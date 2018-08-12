@@ -1,6 +1,6 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
 <h3>Новая кассовая операция {{object}}</h3>
 <form method="POST" class="post-form">{% csrf_token %}
     {{ form.as_ul }}

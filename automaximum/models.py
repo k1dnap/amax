@@ -96,7 +96,8 @@ class storage(models.Model):
 
 #двигатель
 class engine(models.Model):
-    name = models.CharField(max_length=64, blank = False, unique=True, verbose_name='Название')
+    name = models.CharField(max_length=64, blank = False, verbose_name='Название')
+    info = models.TextField(blank = True, verbose_name='Информация')
     class Meta:
         ordering = ['name']
     def __str__(self):
@@ -107,11 +108,13 @@ class car(models.Model):
     name = models.CharField(max_length=128, blank = False, verbose_name='Название')
     full_num = models.CharField(max_length=128, blank = True, verbose_name='Полный номер кузова')
     subcategory_of = models.ForeignKey('self', blank=True, null= True, on_delete=models.SET_NULL, verbose_name='Подкатегория от')
-    date1 = models.DateField(blank = True, null= True, default=timezone.now, verbose_name='Дата начала выпуска')
-    date2 = models.DateField(blank = True, null= True, default=timezone.now, verbose_name='Дата окончания выпуска')
+    date1 = models.DateField(blank = True, null= True, verbose_name='Дата начала выпуска')
+    date2 = models.DateField(blank = True, null= True, verbose_name='Дата окончания выпуска')
     engine = models.ManyToManyField(engine, blank = True, verbose_name='Двигатель')
     slug = models.SlugField(blank=True, max_length=128, allow_unicode=True)
     full_name = models.CharField(max_length=128, blank = True)
+    transmission = models.CharField(max_length=128, blank = True, verbose_name = 'Трансмисия')
+    ext_id = models.IntegerField(blank = True, null= True)
     class Meta:
         ordering = ['full_name']
     def save(self, *args, **kwargs):
@@ -486,131 +489,3 @@ class memory_action(models.Model):
 #
 #
 #
-#
-#
-#
-#class category(models.Model):		
-#    title = models.CharField(max_length=200, blank=False, unique=True, verbose_name='Название')
-#    slug = models.SlugField(blank=True, max_length=50, allow_unicode=True)
-#	
-#
-#class carousel(models.Model):
-#    text = models.IntegerField(verbose_name='Порядковый номер (от 0)')
-#    title = models.CharField(max_length=30, blank=True, verbose_name='Название')
-#    description = models.CharField(max_length=30, blank=True, verbose_name='Описание')
-#    mainimg = models.ImageField(upload_to='carousel/', verbose_name='Изображение')
-#    def __str__(self):
-#        return str(self.text)
-#
-#class images(models.Model):
-#    placing = (
-#    ('main/about_us', 'main/about_us'),
-#    ('main/contacts', 'main/contacts'),
-#    ('main/products', 'main/products'),
-#    ('about_us/main', 'about_us/main'),
-#	('products/main', 'products/main'),
-#    )
-#    showplace = models.CharField(max_length=22, blank=False, choices=placing, default='main/about_us', unique=True, verbose_name='Отображать в')
-#    mainimg = models.ImageField(upload_to='images/', verbose_name='Изображение')
-#    def __str__(self):
-#        return self.showplace
-#
-#class certificates(models.Model):
-#    text = models.IntegerField(verbose_name='Порядковый номер (от 0)')
-#    mainimg = models.ImageField(upload_to='certificates/', blank=False, verbose_name='Изображение')
-#    class Meta:
-#        verbose_name = ("Сертификат")
-#        verbose_name_plural = ("Сертификаты")
-#    def __str__(self):
-#        return str(self.text)
-#
-#
-#class about(models.Model):
-#    text = models.TextField(verbose_name='Текст')
-#    def __str__(self):
-#        return self.text
-#    class Meta:
-#        verbose_name = ("О компании")
-#        verbose_name_plural = ("О компании")
-#class contact(models.Model):
-#    text = models.TextField(verbose_name='Текст')
-#    def __str__(self):
-#        return self.text
-#    class Meta:
-#        verbose_name = ("Контакт")
-#        verbose_name_plural = ("Контакты")
-#class news(models.Model):
-#    name = models.CharField(max_length=200, verbose_name='Имя')
-#    number = models.TextField(blank=True, null=True, verbose_name='Номер')
-#    created_date = models.DateTimeField(
-#            default=timezone.now, verbose_name='дата')
-#    email = models.CharField(max_length=200, verbose_name='Емейл')
-#    text = models.CharField(max_length=200, verbose_name='Текст')
-#    class Meta:
-#        verbose_name = ("Обращение")
-#        verbose_name_plural = ("Обращения")
-#    def publish(self):
-#        self.created_date = timezone.now()
-#        self.save()
-#
-#    def __str__(self):
-#        return self.name
-#
-#class category(models.Model):
-#    title = models.CharField(max_length=200, blank=False, unique=True, verbose_name='Название')
-#    slug = models.SlugField(blank=True, max_length=50, allow_unicode=True)
-#    short_description = models.TextField(blank=True, null=True, max_length=200, verbose_name='Краткое описание')
-#    searchtags = models.CharField(max_length=200, blank=True, verbose_name='Теги для поиска')
-#    mainimg = models.ImageField(upload_to='categories/', blank=True, verbose_name='Изображение')
-#    subcategory = models.ForeignKey('self', blank=True, null=True, verbose_name='Подкат', on_delete=models.CASCADE)
-#    class Meta:
-#        unique_together = ('slug', 'subcategory',)
-#        verbose_name = ("Категорию")
-#        verbose_name_plural = ("Категории")
-#    def get_cat(self):
-#       return category.objects.filter(subcategory=self)     
-#    def save(self, *args, **kwargs):
-#        self.slug = slugify(self.title, allow_unicode=True)
-#        if self != self.subcategory:
-#            super().save()
-#        else:
-#            return errors
-#    def __str__(self):
-#        full_path = [self.title]
-#        k = self.subcategory 
-#
-#        while k is not None:
-#            full_path.append(k.title)
-#            k = k.subcategory 
-#
-#        return ' -> '.join(full_path[::-1])
-#class product(models.Model):
-#    category = models.ForeignKey(category, verbose_name='Категория')
-#    title = models.CharField(max_length=200, blank=False, unique=True, verbose_name='Название')
-#    slugprod = models.SlugField(blank=True, max_length=50, allow_unicode=True)
-#    slugcat = models.SlugField(blank=True, max_length=50, allow_unicode=True)
-#    text = models.TextField(blank=True, null=True)
-#    short_description = models.TextField(blank=True, null=True, max_length=200, verbose_name='Краткое описание')
-#    searchtags = models.CharField(max_length=200, blank=True, verbose_name='Теги для поиска')
-#    mainimg = models.ImageField(upload_to='products/', blank=True,  verbose_name='Изображение')
-#
-#    class Meta:
-#        verbose_name = ("Продукцию")
-#        verbose_name_plural = ("Продукция")
-#    def save(self, *args, **kwargs):
-#        self.slugprod = slugify(self.title, allow_unicode=True)
-#        self.slugcat = slugify(self.category, allow_unicode=True)
-#        super().save()
-#    def get_products(self):
-#       product.objects.filter(category=self)     
-#    def __str__(self):
-#        return self.title
-#
-#class uploads(models.Model):
-#    filename = models.FileField(upload_to='uploads/', blank=False, 
-#verbose_name='Файл')
-#    class Meta:
-#        verbose_name = ("Загрузку")
-#       verbose_name_plural = ("Загрузки")
-#    def __str__(self):
-#        return 'opticalhc.ru'+self.filename.url

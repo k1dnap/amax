@@ -1,6 +1,6 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
             <div class="btn-group">
                 <a href="{% url 'trading_products_list'%}" class="save btn btn-default{% if button_bar == 'trading_products_list' %} active{% endif %}" role="button" aria-pressed="true">Картотека</a> 
                 <a href="{% url 'trading_products_list'%}?view_type=argus" class="save btn btn-default{% if button_bar == 'trading_products_list_argus' %} active{% endif %}" role="button" aria-pressed="true">Аргус</a> 

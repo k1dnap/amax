@@ -1,6 +1,6 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
 <form method="POST" class="post-form">
     {% if page == 'edit'%}<button type="submit" name="deleteit" value="true" class="save btn btn-danger pull-right">Удалить</button>{%endif%}
     <h3>{% if page == 'edit'%}Редактирование денежной операции: {{operation_money1}}{%else%}Новая денежная операция{%endif%} </h3>

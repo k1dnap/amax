@@ -19,8 +19,8 @@ class operation_product_product_instanceForm(forms.ModelForm):
         fields = ('product', 'product_amount', 'product_price',)
         widgets = {
             'product': forms.HiddenInput(attrs={'class': 'form-control','placeholder':'Продукция'}),
-            'product_amount': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Кол-во'}),
-            'product_price': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Цена'})
+            'product_amount': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Кол-во','style':'padding-right: 0px;padding-left: 2px;'}),
+            'product_price': forms.NumberInput(attrs={'class': 'form-control price-gen','placeholder':'Цена','style':'padding-right: 0px;padding-left: 2px;'})
         }
 
 class access_levelForm(forms.ModelForm):

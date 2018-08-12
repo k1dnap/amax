@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% block content %}
-<div class="container">
-<button data-product-id="{{view_product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1" class="btn btn-mini btn-default add_to_basket pull-right" type="button">В корзину</button>
+<div class="container-fluid">
+<button  style="margin-top: 20px;" data-product-id="{{view_product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1" class="btn btn-mini btn-default add_to_basket pull-right" type="button">В корзину</button>
 
 
 <h3>{{view_product}}</h3>

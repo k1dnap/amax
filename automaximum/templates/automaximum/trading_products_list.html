@@ -1,7 +1,7 @@
 {% extends 'automaximum/trading_base.html' %}
 {% load staticfiles %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
         <h3>Картотека</h3>
         <div class="btn-group">
             <a href="{% url 'trading_products_list'%}" class="save btn btn-default{% if button_bar == 'trading_products_list' %} active{% endif %}" role="button" aria-pressed="true">Картотека</a> 
