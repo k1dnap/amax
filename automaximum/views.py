@@ -2025,6 +2025,7 @@ def trading_operation_product_create(request):
         else:
             #obrabativaem formu
             form = operation_productForm()
+            del form.fields["car"]
             form.fields["price"].empty_label=None
             form.fields["created_by"].empty_label=None
             form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))
@@ -2250,6 +2251,7 @@ def trading_operation_product_edit(request):
                 print('####################form invali')
         else:
             form = operation_productForm(instance = operation_product1)
+            del form.fields["car"]
             form.fields["client"].empty_label=None
             form.fields["created_by"].empty_label=None
             form.fields["created_by"].queryset = User.objects.filter(Q(is_staff=True)| Q(is_superuser=True))

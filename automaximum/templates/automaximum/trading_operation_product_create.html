@@ -8,7 +8,61 @@
     <hr>
     {% csrf_token %}
     {{ form.as_p }}
-  
+    
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#cars">Машина</button><br><br>
+    
+    <!-- Modal cars -->
+<div class="modal fade" id="cars" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Машина</h4>
+        </div>
+        <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" placeholder="Название" data-type="car" class="form-control car_for" value = ''>
+                <br/>
+                <car_m2m id="carm2m">
+                </car_m2m>
+                
+                <hr>
+                <h5>Выбранные:</h5>
+                <is_m2m id="car_listm2m">
+                    {% if page != 'new' %}
+                    <p><a class = "del_car">[-]</a><input type="hidden" name="car" value="{{operation_product1.car.pk}}">
+                    {{operation_product1.car}}</p>
+                    {%endif%}
+                </is_m2m>
+                </div>
+            
+        </div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-default my-1">Закрыть</button>
+        </div>
+      </div>
+    </div>
+</div>
+    
+  <p>
+  <label for="id_car">Автомобиль:</label> 
+      <select name="car" class="form-control" id="id_car">
+          <option value="" selected="">---------</option>
+
+          <option value="1">Toyota</option>
+
+          <option value="2">Toyota/Harrier</option>
+
+          <option value="5">Toyota/Harrier/ACU10W</option>
+
+          <option value="3">Toyota/Harrier/GSU30W</option>
+
+          <option value="4">Toyota/Harrier/GSU30W/GSU30W-AWAGK</option>
+
+      </select>
+  </p>
+
+
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#menu0">Товары</a></li>
         <li><a data-toggle="tab" href="#menu1">Платежи</a></li>

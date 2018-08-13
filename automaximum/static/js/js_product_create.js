@@ -21,8 +21,6 @@ $(document).on('click', '.addline', function() {
 
 
 jQuery(document).ready(function (){
-
-
     function m2m(query, type, categoryid, prodid){
         var data = {};
         data.type = type
