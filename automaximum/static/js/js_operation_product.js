@@ -147,13 +147,9 @@ $(document).on('change', 'select[name=price]', function() {
 
 jQuery(document).ready(function ()
 {
-    function m2m(query, type, categoryid, prodid){
+    function m2m(query, type){
         var data = {};
         data.type = type
-        if (data.type == 'analogue'){
-            data.categoryid = categoryid
-            data.prodid = prodid
-        }
         console.log(data.type)
         data.query = query
         data.subject = 'productf'
@@ -169,7 +165,7 @@ jQuery(document).ready(function ()
                         $('#'+data.type+'m2m').append('<li><span>Не найдено.</span></li>');
                     }else{
                         $.each(data.items, function(k, v){
-                            $('#'+data.type+'m2m').append('<p objtype="'+data.type+'"><a class="add_car">[+]</a><input type="hidden" name="'+data.type+'zx" value="'+v.id+'">'+v.name+'</p>');
+                            $('#'+data.type+'m2m').append('<p objtype="'+data.type+'"><a class="add_car">[+]</a><input type="hidden" name="'+data.type+'zx" value="'+v.id+'"> '+v.name+'</p>');
                         });
                     }                    
                     }
@@ -182,6 +178,16 @@ jQuery(document).ready(function ()
         console.log('got to func');
     };
 
+function remove_objects()
+{
+    $('#carm2m').html("");
+};
+
+$(document).on('click', '.save', function()
+{
+    remove_objects();
+});
+
 
 $(document).on('keyup', '.car_for', function(e)
 {
@@ -190,7 +196,7 @@ $(document).on('keyup', '.car_for', function(e)
     var type = $(this).attr("data-type");
     if (query.length > 2)
     {
-        m2m(query, type, categoryid, prodid)
+        m2m(query, type)
     };
 });
 
@@ -208,7 +214,9 @@ $(document).on('click', '.add_car', function() {
         var ars = $(this).text().replace('[+]', '[-]');
         $(this).text(ars);
     });
-    $('#'+type+'_listm2m').after(newElement);
+    $('#car_listm2m').html("");
+    $('#'+type+'_listm2m').append(newElement);
+    remove_objects();
 });
 
 $(document).on('click', '.del_car', function() {

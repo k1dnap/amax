@@ -51,6 +51,7 @@ def removeitemsfrombasket(mbf):
 #главная++ (не рефактори)
 def main(request):
     return render(request, 'automaximum/site_index.html')
+
 #торговая_главная++(не рефактори)
 def trading(request):
     if request.user.is_staff or request.user.is_superuser:

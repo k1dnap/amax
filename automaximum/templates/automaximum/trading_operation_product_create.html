@@ -23,17 +23,20 @@
                 <div class="form-group">
                     <input type="text" placeholder="Название" data-type="car" class="form-control car_for" value = ''>
                 <br/>
-                <car_m2m id="carm2m">
-                </car_m2m>
-                
-                <hr>
-                <h5>Выбранные:</h5>
+                <h5>Выбранная:</h5>
                 <is_m2m id="car_listm2m">
-                    {% if page != 'new' %}
+                    {% if operation_product1.car %}
                     <p><a class = "del_car">[-]</a><input type="hidden" name="car" value="{{operation_product1.car.pk}}">
                     {{operation_product1.car}}</p>
                     {%endif%}
+
                 </is_m2m>
+                <hr>
+                <car_m2m id="carm2m">
+                </car_m2m>
+                
+                
+
                 </div>
             
         </div>
@@ -43,25 +46,6 @@
       </div>
     </div>
 </div>
-    
-  <p>
-  <label for="id_car">Автомобиль:</label> 
-      <select name="car" class="form-control" id="id_car">
-          <option value="" selected="">---------</option>
-
-          <option value="1">Toyota</option>
-
-          <option value="2">Toyota/Harrier</option>
-
-          <option value="5">Toyota/Harrier/ACU10W</option>
-
-          <option value="3">Toyota/Harrier/GSU30W</option>
-
-          <option value="4">Toyota/Harrier/GSU30W/GSU30W-AWAGK</option>
-
-      </select>
-  </p>
-
 
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#menu0">Товары</a></li>

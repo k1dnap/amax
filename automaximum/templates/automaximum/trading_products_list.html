@@ -37,7 +37,7 @@
             <itemname id="itemname">
             {%if items_product %}
             {% for product in items_product %}
-            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
             {% endfor %}
             {%endif%}
             {%if type == "name" and item != '' and items_product.count < 1%}
@@ -59,9 +59,12 @@
             {%if currcar and car_all%}
             <h4>Подкатегории:</h4>
             {%endif%}
+            <button data-toggle="collapse" data-target="#allsubcats" class="btn btn-default my-1">Подкатегории</button>
+            <div id="allsubcats" class="collapse">
             {% for car in car_all %}
             <li><a href="{% url 'trading_products_list' %}?type=car&search_product={{car.full_name}}">{{car.full_name}}</a></li>
             {% endfor %}
+            </div>
             {%if currcar != None%}
             <h3>{{currcar}}:</h3>
             <button data-toggle="collapse" data-target="#bycat" class="btn btn-default my-1">По категориям</button>
@@ -71,7 +74,7 @@
                 {% for zxc in car_cat_list %}
                 <h4>{{ zxc.grouper }}:</h4>
                     {% for kas in zxc.list|dictsort:'full_name' %}
-                    <p><a class = "add_to_basket" href="" data-product-id="{{kas.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{kas.pk}}">{{kas.full_name}}</a></p>
+                    <p><a class = "add_to_basket" href="" data-product-id="{{kas.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{kas.pk}}">{{kas.full_name}}</a></p>
                     {% endfor %}
                 {% endfor %}
                 {%else%}
@@ -88,7 +91,7 @@
             <h4>{{djs}}:</h4>
             {%endfor%}
             {%for hud in ore|slice:"1:"|dictsort:'product.full_name'%}
-            <p><a class = "add_to_basket" href="" data-product-id="{{hud.product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{hud.product.pk}}">{{hud.product.full_name}}</a></p>
+            <p><a class = "add_to_basket" href="" data-product-id="{{hud.product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{hud.product.pk}}">{{hud.product.full_name}}</a></p>
             {%endfor%}
             {%endfor%}
             {%else%}
@@ -123,7 +126,7 @@
             {%endif%}
             {%endif%}
             {% for product in engine_list %}
-            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
             {% endfor %}
         </div>
         <div id="menu3" class="tab-pane fade{%if type == "category"%} in active{%endif%}">
@@ -159,7 +162,7 @@
                     {%endif%}
                 {%endif%}
                 {% for product in curr_cat|dictsort:'full_name' %}
-                <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+                <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
                 {% endfor %}
                 {%if cat_list%}
                 <h4>В подкатегориях:</h4>
@@ -218,7 +221,7 @@
             {%if characteristicszz%}
             <br/>
             {%for mcx in characteristicszz%}
-            <p><a class = "add_to_basket" href="" data-product-id="{{mcx.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{mcx.pk}}">{{mcx.full_name}}</a></p>
+            <p><a class = "add_to_basket" href="" data-product-id="{{mcx.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{mcx.pk}}">{{mcx.full_name}}</a></p>
             {%endfor%}
             {%else%}
             {%if dlyaproverkichar %}
@@ -257,7 +260,7 @@
             {%endif%}
             {%endif%}
             {% for product in manufact_list %}
-            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
+            <p><a class = "add_to_basket" href="" data-product-id="{{product.pk}}" data-user-id="{{userstaff.pk}}" data-amount="1">[+]</a> <a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">{{product.full_name}}</a></p>
             {% endfor %}
         </div>
       </div>
@@ -287,7 +290,7 @@ data-href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}"
 
 https://www.w3schools.com/bootstrap/bootstrap_collapse.asp
 
-<p><a href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">Управление товарами</a></p>
+<p><a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{product.pk}}">Управление товарами</a></p>
 <div class="btn-group">
         <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
         <a href="{% url 'trading_products_create' %}?create=product" class="save btn btn-default" role="button" aria-pressed="true">Новая</a> 
@@ -300,5 +303,5 @@ https://www.w3schools.com/bootstrap/bootstrap_collapse.asp
 
 
     {% for ars in cat_list_products %}
-    <p><a href="{% url 'trading_products_view' %}?object=product&id={{ars.pk}}">{{ars.full_name}}</a></p>
+    <p><a target="_blank" rel="noopener noreferrer"  href="{% url 'trading_products_view' %}?object=product&id={{ars.pk}}">{{ars.full_name}}</a></p>
     {% endfor %}
