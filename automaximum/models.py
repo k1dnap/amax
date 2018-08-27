@@ -473,7 +473,11 @@ class operation_product_product_instance(models.Model):
     class Meta:
         ordering = ['-created_date']
     def totalprice(self):
-       return (self.product_amount * self.product_price)
+        if self.product_amount == None or self.product_price == None:
+            dsa = 0
+        else:
+            dsa = self.product_amount * self.product_price
+        return (dsa)
     def __str__(self):
         return str(self.product)
 

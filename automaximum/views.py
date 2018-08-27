@@ -50,7 +50,7 @@ def removeitemsfrombasket(mbf):
 
 #главная++ (не рефактори)
 def main(request):
-    return render(request, 'automaximum/site_index.html')
+    return render(request, 'main/site_index.html')
 
 #торговая_главная++(не рефактори)
 def trading(request):
@@ -66,7 +66,7 @@ def sign(request):
         return redirect('main')
     if action == 'login':
         print(request.user.is_authenticated)
-        if request.user.is_authenticated == True:
+        if request.user.is_authenticated:
             return redirect('main')
         else:
             if request.method == 'POST':
@@ -78,7 +78,7 @@ def sign(request):
                         login(request, user)
                         return redirect('trading')
             else:
-                return render(request, 'automaximum/login.html',{
+                return render(request, 'main/login.html',{
                 })    
     return redirect('main')
 
@@ -299,12 +299,13 @@ def trading_additional_prices(request):
                     ret_list.append(k)
                 qset.append(ret_list)
         #dlya drugih massovikh reaktirovaniy cen, k primeru po 分类，或者原厂或我不知道
-        elif 'uslovie' == '':
+        elif 'uslovie' == '233':
             None
         else:            
             return redirect('trading')
         if request.method == "POST":
             for obj in qset:
+                #a pochemu s 1? chto tam v 0?
                 for i in obj[1:]:
                     print(i)
                     t = price_value.objects.get(pk=i.pk)
@@ -1938,7 +1939,10 @@ def trading_operation_product_create(request):
                 del form.fields["storage_recieve"]
             if operation_product1.changes_price == True:
                 del form.fields["price"]
-            
+            if init == 'val':
+                asd = request.POST.copy()
+                asd['form-INITIAL_FORMS'] = '0'
+                request.POST = asd
             editformset = editformset1(request.POST,  queryset=operation_product_product_instance.objects.none())
             editformset_cashbox = editformset2(request.POST, queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for sdf in editformset_cashbox:
@@ -2060,8 +2064,10 @@ def trading_operation_product_create(request):
                 if arms.instance.product != None:
                     zae = kiss.get(product=arms.instance.product)
                     arms['product_amount'].initial = float(zae.value)
+                    arms['id'].initial = ''
                 fields = list(arms)
                 arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
+                fields= None
             #obrabativaem editformsetcashbox
             editformset_cashbox = editformset2(queryset=operation_product_cashbox_instance.objects.none(), prefix='cashbox')
             for vcv in editformset_cashbox:
@@ -2293,7 +2299,7 @@ def trading_operation_product_edit(request):
             for arms in editformset:
                 arms.ttlprc = None
                 if arms.instance.product and operation_product1.type.type != 'minusplus':
-                    arms.ttlprc = (arms.instance.product_amount *arms.instance.product_price)
+                    arms.ttlprc = arms.instance.totalprice()
                 fields = list(arms)
                 arms.part0, arms.part1, arms.part2 = fields[0], fields[1], fields[2]
                 fields= None

@@ -27,7 +27,7 @@
             <div id="menu0" class="tab-pane fade in active">
               <h3>Товары</h3>
               {%for q in operation_product1.get_prodinstance%}
-                <li><a href="{% url 'trading_products_view' %}?object=product&id={{q.product.pk}}">{{q.product}}</a>: {{q.product_amount}}{%if operation_product1.client%} {{q.product_price}} {{q.totalprice}}{%endif%}</li> 
+                <li><a href="{% url 'trading_products_view' %}?object=product&id={{q.product.pk}}">{{q.product}}</a>: {{q.product_amount}}{%if operation_product1.client%} {%if q.product_price%}{{q.product_price}}{%else%}0{%endif%} {{q.totalprice}}{%endif%}</li> 
               {%endfor%}
             </div>
             {%if operation_product1.client%}

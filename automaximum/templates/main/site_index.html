@@ -1,5 +1,64 @@
-
-
+{% extends 'main/site_base.html' %}
+{% block content %}
+<div class="container-fluid">
+   https://getbootstrap.com/docs/3.3/getting-started/#examples
+   <br>
+   suda mojno zahooyarit' tipo dvigayushiyesya kartinki
+    <div class="row">
+    <div class="col-lg-6">
+      <h3>Окошко поиска по названию</h3>
+      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      <p><a class="btn btn-default pull-right" href="#" role="button">View details »</a></p>
+    </div>
+    <div class="col-lg-6">
+      <h3>Окошко поиска по машине</h3>
+      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      <p><a class="btn btn-default pull-right" href="#" role="button">View details »</a></p>
+    </div>
+    </div>
+<hr>
+<h4>новость0</h4>
+<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+<p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+<hr>
+<h4>новость1</h4>
+<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+<p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <a href="{% url 'sign'%}?action=login">Авторизация</a>
 <br/>
 {% if user.is_authenticated %}<a href="{% url 'sign'%}?action=logout">Выйти</a>{%endif%}
@@ -16,6 +75,8 @@ admin: '1', 'tachikoma228'
 <br>
 http://vladisa.pythonanywhere.com
 <br>https://www.learn-c.org<br>
+
+
 
 <h4>Нужно сделать: </h4>
 
@@ -60,3 +121,5 @@ http://vladisa.pythonanywhere.com
 <li>в поиске товара по наименованию учитывать ещё и данные из article_alt filter(Q(article_alt__icontains=query))</li>
 <li>разрешить администратору менять закупочную цену продукта</li>
 <li>В создании\редактировании товарной операции добавить фк на автомобиль.в просмотре товарной операции добавить кнопку для добавления автомобиля к товарам в продуктовой операции, открывается окно со всеми товарами из товарной операции и галочками слева</li>
+</div>
+{% endblock %}

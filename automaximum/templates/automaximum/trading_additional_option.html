@@ -20,22 +20,24 @@
 <p><a href="{% url 'trading_operation_product_edit' %}?operation_id={{z.pk}}">{{z.type}}</a>
     {%endif%}
 {%if z.product %}
-{{z.product}}
+    {{z.product}}
 {%else%}
-{{z.full_name}}
-{%endif%}</a>
+    {{z.full_name}}
+{%endif%}
+</a>
 {%if z.product %}
-<br><strong>{{z.price}}</strong>
-<br>Рекомендуемая: {{z.recomend_price}}
-<br>По факту: {{z.value}} 
+    <br><strong>{{z.price}}</strong>
+    <br>Рекомендуемая: {{z.recomend_price}}
+    <br>По факту: {{z.value}} 
 {%endif%}
 {%if z.status %}
-<br>Минимальный остаток: {{z.min_amount}} 
-<br>По факту: {{z.amount0}}
+    <br>Минимальный остаток: {{z.min_amount}} 
+    <br>По факту: {{z.amount0}}
 {%endif%}
 {%if type == 'need_to_edit' or type == 'need_to_edit_op'%}
-: {{z.need_to_edit_commentary}}
-{%endif%}</p>
+    : {{z.need_to_edit_commentary}}
+{%endif%}
+</p>
 {%endfor%}
 {%endif%}
 </div>
